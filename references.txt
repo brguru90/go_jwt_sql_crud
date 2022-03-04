@@ -1,0 +1,8 @@
+
+
+https://github.com/jackc/pgx
+https://pkg.go.dev/github.com/jackc/pgx#section-readme
+
+
+https://blog.logrocket.com/building-microservices-go-gin/
+https://github.com/gin-gonic/gin

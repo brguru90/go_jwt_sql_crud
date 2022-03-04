@@ -3,3 +3,5 @@
 3. automate SQL database & table creation with indexes
 4. connect redis DB
 5. JWT authentication
+6. Benchmark
+7. Readme --> compare go benchmark score with https://github.com/brguru90/node-sql-and-jwt-demo benchmark
