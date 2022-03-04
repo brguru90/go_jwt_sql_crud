@@ -1,0 +1,86 @@
+.user_profile {
+    background-color: rgb(212, 230, 240);
+    padding-bottom: 20px;
+
+    .form_container {
+        .user_view {
+            grid-area: user_view;
+        }
+
+        .user_update {
+            grid-area: user_update;
+        }
+
+        .user_logout {
+            grid-area: user_logout;
+
+            td {
+                vertical-align: top;
+                word-break: break-word;
+            }
+
+        }
+
+        .active_sessions {
+            grid-area: active_sessions;
+        }
+
+        display: grid;
+        grid-template-areas: "user_view user_update user_logout"
+        "active_sessions active_sessions active_sessions";
+
+
+        fieldset {
+            background-color: white;
+            margin: 20px;
+            padding: 20px;
+
+            table {
+                min-width: 90%;
+
+                td {
+                    vertical-align: top;
+                }
+
+                .ip {
+                    background-color: rgb(248, 231, 234);
+                    padding-top: 20px;
+                }
+
+                .sub_tbl_sect {
+                    display: flex;
+                    align-items: start;
+                    flex-wrap: wrap;
+
+                    // grid-template-columns: repeat(4,1fr);
+                    div {
+                        padding: 5px 5px 2px 10px;
+                        margin: 5px;
+                        border-radius: 10px;
+                        // min-width: 100px;
+                        background-color: rgb(248, 231, 234);
+
+                        span {
+                            padding: 5px;
+                            margin-left: 10px;
+                            background-color: rgb(183, 242, 250);
+                            display: inline-block;
+                            word-break: break-word;
+                        }
+                    }
+                }
+            }
+
+            .ver_resizable {
+                height: 100px;
+                padding: 5px 10px 5px 10px;
+                width: 100%;
+                resize: vertical;
+                overflow: auto;
+                background-color: rgb(228, 224, 224);
+                word-break: break-word;
+                white-space: normal;
+            }
+        }
+    }
+}

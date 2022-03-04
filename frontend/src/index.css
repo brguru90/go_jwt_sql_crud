@@ -1,0 +1,14 @@
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(235, 184, 184);
+}
+
+#root {
+    min-height: 100%;
+    /* background-color: aqua; */
+    display: inline-block;
+    width: 100%;
+}

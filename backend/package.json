@@ -1,0 +1,14 @@
+{
+  "name": "learn_go",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Guruprasad BR",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "start":"nodemon --exec go run src/main.go --signal SIGTERM",
+    "install": "go mod init learn_go && go mod tidy"
+  }
+}
