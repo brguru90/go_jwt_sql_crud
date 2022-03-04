@@ -8,6 +8,7 @@ import (
 
 	"learn_go/src/apis"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,26 +19,29 @@ var SERVER_PORT string = "8000"
 func main() {
 	// all_router = gin.New()
 	all_router = gin.Default()
-	api_router := all_router.Group("/api")
+	all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
 
-	api_router.Use(LogRequest)
+	{
+		// just grouping, to make it more readable
+		api_router := all_router.Group("/api")
 
-	api_router.Use(HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
-		c.String(http.StatusOK, "hi")
-	})
+		// an example for global middleware
+		api_router.Use(FindUserAgentMiddleware())
 
-	api_router.GET("test2/:id", func(c *gin.Context) {
-		c.String(http.StatusOK, "the param sent %s", c.Param("id"))
-	})
+		api_router.Use(HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
+			c.String(http.StatusOK, "hi")
+		})
 
-	apis.InitApiTest(api_router.Group("", FindUserAgentMiddleware()))
+		// more apis imported
+		apis.InitApiTest(api_router)
+	}
 
 	if os.Getenv("SERVER_PORT") != "" {
 		SERVER_PORT = os.Getenv("SERVER_PORT")
 	}
 
 	// log.Fatal(http.ListenAndServe(":8080", all_router))
-	bind_to_host := fmt.Sprintf(":%s", SERVER_PORT)
+	bind_to_host := fmt.Sprintf(":%s", SERVER_PORT) //formatted host string
 	all_router.Run(bind_to_host)
 
 }
@@ -55,14 +59,9 @@ func HeaderHandlerFunc(c *gin.Context) {
 	}
 }
 
-func LogRequest(c *gin.Context) {
-	fmt.Println("request ====> ", c.FullPath())
-
-}
-
 func FindUserAgentMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Println(c.GetHeader("User-Agent"))
+		log.Println(c.FullPath(), " | User Agent Logger ===>", c.GetHeader("User-Agent"))
 		// Before calling handler
 		c.Next()
 		// After calling handler
