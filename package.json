@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "env-cmd -f .env concurrently 'yarn --cwd ./frontend/ start' 'yarn --cwd ./backend/ start'"
+    "start_frontend": "env-cmd -f .env  yarn --cwd ./frontend/ start",
+    "start_backend": "env-cmd -f .env yarn --cwd ./backend/ start",
+    "start": "env-cmd -f .env concurrently 'yarn --cwd ./frontend/ start' 'yarn --cwd ./backend/ start'",
+    "install_frontend": "yarn --cwd ./frontend/ install",
+    "install_backend": "yarn --cwd ./backend/ install",
+    "install":"npm-run-all  --serial install_frontend install_backend"
   },
   "author": "Guruprasad BR",
   "license": "ISC",
