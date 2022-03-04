@@ -13,7 +13,7 @@ type ResponseBody struct {
 	Data    interface{} `json:"data"`
 }
 
-func CreateResponse(status string, message string, Data interface{}) string {
+func CreateResponsePayload(status string, message string, Data interface{}) string {
 	var responseBody ResponseBody
 	responseBody.Data = Data
 	responseBody.Status = status
