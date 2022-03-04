@@ -2,23 +2,24 @@ package views
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+
+	"learn_go/src/my_modules"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Row struct {
-	COL_id          int64       `json:"id"`
-	COL_uuid        string      `json:"uuid"`
-	COL_email       string      `json:"email"`
-	COL_name        string      `json:"name"`
-	COL_description string      `json:"description"`
-	COL_createdAt   interface{} `json:"createdAt"`
-	COL_updatedAt   interface{} `json:"updatedAt"`
+	Column_id          int64       `json:"id"`
+	Column_uuid        string      `json:"uuid"`
+	Column_email       string      `json:"email"`
+	Column_name        string      `json:"name"`
+	Column_description string      `json:"description"`
+	Column_createdAt   interface{} `json:"createdAt"`
+	Column_updatedAt   interface{} `json:"updatedAt"`
 }
 
 func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
@@ -28,14 +29,14 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 		rows, err := db_connection.Query(context.Background(), db_query)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\tdb_query==>%s\n", err, db_query)
-			c.JSON(http.StatusOK, gin.H{"status": "error", "message": "No record found"})
+			my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "No record found", nil)
 			return
 		} else {
 			defer rows.Close()
 			var rowSlice []Row
 			for rows.Next() {
 				var r Row
-				err := rows.Scan(&r.COL_id, &r.COL_uuid, &r.COL_name, &r.COL_email, &r.COL_description, &r.COL_createdAt, &r.COL_updatedAt)
+				err := rows.Scan(&r.Column_id, &r.Column_uuid, &r.Column_name, &r.Column_email, &r.Column_description, &r.Column_createdAt, &r.Column_updatedAt)
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Scan failed: %v\n", err)
 				}
@@ -47,13 +48,11 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 				fmt.Fprintf(os.Stderr, "Row Err failed: %v\n", err)
 			}
 
-			result, _ := json.MarshalIndent(rowSlice, "", "  ")
-			c.Writer.Header().Set("Content-Type", "application/json")
-			c.String(200, fmt.Sprintf(`{"data":%s, "msg": "Found","status": "success"}`, string(result)))
+			my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)
 			return
 		}
 	} else {
-		c.JSON(http.StatusOK, gin.H{"status": "error", "message": "Didn't got UUID"})
+		my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "Didn't got UUID", nil)
 		return
 	}
 }

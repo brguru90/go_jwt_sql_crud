@@ -1,0 +1,5 @@
+1. SQL CRUD
+2. find a logger module
+3. automate SQL database & table creation with indexes
+4. connect redis DB
+5. JWT authentication
