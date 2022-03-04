@@ -22,7 +22,6 @@ type Row struct {
 }
 
 func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
-
 	var uuid string = c.Query("uuid")
 	if uuid != "" {
 		var db_query string = fmt.Sprintf(`select * from users where uuid='%s'; `, uuid)

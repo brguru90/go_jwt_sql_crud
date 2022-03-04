@@ -2,6 +2,7 @@ package apis
 
 import (
 	"learn_go/src/apis/views"
+	"learn_go/src/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -10,7 +11,7 @@ import (
 // only the functions whose initial letter is upper case only those can be exportable from package
 func InitApiTest(router *gin.RouterGroup, db_connection *pgxpool.Pool) {
 
-	router.Use(ApiSpecificMiddleware())
+	router.Use(middleware.ApiSpecificMiddleware())
 	router.GET("test/:id", test_api)
 	router.GET("hello/", views.Hello_api)
 	router.GET("sign_up/", func(c *gin.Context) {
@@ -21,7 +22,7 @@ func InitApiTest(router *gin.RouterGroup, db_connection *pgxpool.Pool) {
 	})
 
 	{
-		protected_router := router.Group("", ValidateToken())
+		protected_router := router.Group("", middleware.ValidateToken())
 
 		protected_router.GET("user/", func(c *gin.Context) {
 			views.GetUserData(c, db_connection)
