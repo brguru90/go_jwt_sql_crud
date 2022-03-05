@@ -10,6 +10,7 @@ func InitLogger() {
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp:          true,
 		DisableLevelTruncation: true,
+		PadLevelText:           true,
 	})
 	log.SetReportCaller(true)
 }
