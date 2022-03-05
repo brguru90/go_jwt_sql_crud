@@ -7,7 +7,10 @@ import (
 
 func FindUserAgentMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Infoln(" | ", c.FullPath(), " | User Agent Logger ===>", c.GetHeader("User-Agent"))
+		log.WithFields(log.Fields{
+			"path":       c.FullPath(),
+			"User Agent": c.GetHeader("User-Agent"),
+		}).Infoln("API Request ==>")
 		// Before calling handler
 		c.Next()
 		// After calling handler

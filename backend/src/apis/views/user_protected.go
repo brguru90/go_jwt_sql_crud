@@ -28,7 +28,10 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 		var db_query string = fmt.Sprintf(`select * from users where uuid='%s'; `, uuid)
 		rows, err := db_connection.Query(context.Background(), db_query)
 		if err != nil {
-			log.Errorln(fmt.Sprintf("QueryRow failed: %v\tdb_query==>%s\n", err, db_query))
+			log.WithFields(log.Fields{
+				"error": err,
+				"query": db_query,
+			}).Errorln("QueryRow failed ==>")
 			my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "No record found", nil)
 			return
 		} else {

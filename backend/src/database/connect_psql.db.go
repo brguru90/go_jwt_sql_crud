@@ -23,7 +23,10 @@ func ConnectPostgres() *pgxpool.Pool {
 
 	dbpool, err := pgxpool.Connect(context.Background(), DB_URL)
 	if err != nil {
-		log.Panicln(fmt.Sprintf("Unable to connect to database: %v\nHaving url:%v\n", err, DB_URL))
+		log.WithFields(log.Fields{
+			"error":  err,
+			"DB_URL": DB_URL,
+		}).Fatalln("Unable to connect to database ==>")
 		os.Exit(1)
 	}
 	return dbpool
