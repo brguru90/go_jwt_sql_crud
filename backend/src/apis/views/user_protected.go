@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 
 	"learn_go/src/my_modules"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
+	log "github.com/sirupsen/logrus"
 )
 
 type Row struct {
@@ -28,7 +28,7 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 		var db_query string = fmt.Sprintf(`select * from users where uuid='%s'; `, uuid)
 		rows, err := db_connection.Query(context.Background(), db_query)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\tdb_query==>%s\n", err, db_query)
+			log.Errorln(fmt.Sprintf("QueryRow failed: %v\tdb_query==>%s\n", err, db_query))
 			my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "No record found", nil)
 			return
 		} else {
@@ -38,14 +38,14 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 				var r Row
 				err := rows.Scan(&r.Column_id, &r.Column_uuid, &r.Column_name, &r.Column_email, &r.Column_description, &r.Column_createdAt, &r.Column_updatedAt)
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "Scan failed: %v\n", err)
+					log.Errorln(fmt.Sprintf("Scan failed: %v\n", err))
 				}
 				rowSlice = append(rowSlice, r)
 			}
-			fmt.Printf("type=%T\nresult=%v", rowSlice, rowSlice)
+			// log.Debugln("type=%T\nresult=%v", rowSlice, rowSlice)
 
 			if err := rows.Err(); err != nil {
-				fmt.Fprintf(os.Stderr, "Row Err failed: %v\n", err)
+				log.Errorln(fmt.Sprintf("Row Err failed: %v\n", err))
 			}
 
 			my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)

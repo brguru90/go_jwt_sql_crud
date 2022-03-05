@@ -8,6 +8,7 @@ import (
 	"learn_go/src/apis"
 	"learn_go/src/database"
 	"learn_go/src/middleware"
+	"learn_go/src/my_modules"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
@@ -17,6 +18,8 @@ import (
 var SERVER_PORT string = "8000"
 
 func main() {
+
+	my_modules.InitLogger()
 
 	// https://github.com/gin-gonic/gin
 
@@ -31,7 +34,7 @@ func main() {
 		api_router := all_router.Group("/api")
 
 		all_router.Use(cors.Default())
-		api_router.Use(middleware.FindUserAgentMiddleware()) // an example for global middleware
+		api_router.Use(middleware.FindUserAgentMiddleware()) // an example for global middleware on api_router
 		api_router.Use(middleware.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
 			c.String(http.StatusOK, "hi")
 		})

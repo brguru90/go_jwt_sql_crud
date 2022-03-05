@@ -1,7 +1,8 @@
 1. SQL CRUD
 2. find a logger module
-3. automate SQL database & table creation with indexes
-4. connect redis DB
-5. JWT authentication
-6. Benchmark
-7. Readme --> compare go benchmark score with https://github.com/brguru90/node-sql-and-jwt-demo benchmark
+3. ShouldBindJSON (struct validation) catch same exception on middleware & convert to appropriate response like invalid request
+4. automate SQL database & table creation with indexes
+5. connect redis DB
+6. JWT authentication
+7. Benchmark
+8. Readme --> compare go benchmark score with https://github.com/brguru90/node-sql-and-jwt-demo benchmark

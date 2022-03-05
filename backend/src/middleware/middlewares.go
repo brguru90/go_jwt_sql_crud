@@ -1,14 +1,13 @@
 package middleware
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 func FindUserAgentMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Println(c.FullPath(), " | User Agent Logger ===>", c.GetHeader("User-Agent"))
+		log.Infoln(" | ", c.FullPath(), " | User Agent Logger ===>", c.GetHeader("User-Agent"))
 		// Before calling handler
 		c.Next()
 		// After calling handler
@@ -30,7 +29,7 @@ func HeaderHandlerFunc(c *gin.Context) {
 
 func ApiSpecificMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Println("ApiSpecificMiddleware ===>", c.Request.URL.Path)
+		// log.Debugln("ApiSpecificMiddleware ===>", c.Request.URL.Path)
 		// Before calling handler
 		c.Next()
 		// After calling handler
@@ -39,7 +38,7 @@ func ApiSpecificMiddleware() gin.HandlerFunc {
 
 func ValidateToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Println("ApiSpecificMiddleware ===>", c.Request.URL.Path)
+		// log.Debugln("ValidateToken,ApiSpecificMiddleware ===>", c.Request.URL.Path)
 		// Before calling handler
 		c.Next()
 		// After calling handler

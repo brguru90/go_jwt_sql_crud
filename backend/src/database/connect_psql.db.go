@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	log "github.com/sirupsen/logrus"
 )
 
 func ConnectPostgres() *pgxpool.Pool {
@@ -22,8 +23,7 @@ func ConnectPostgres() *pgxpool.Pool {
 
 	dbpool, err := pgxpool.Connect(context.Background(), DB_URL)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		fmt.Println("DB_URL ==> ", DB_URL)
+		log.Panicln(fmt.Sprintf("Unable to connect to database: %v\nHaving url:%v\n", err, DB_URL))
 		os.Exit(1)
 	}
 	return dbpool
