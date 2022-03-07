@@ -83,7 +83,10 @@ func LoginStatus(c *gin.Context) (interface{}, string, int) {
 		if err == http.ErrNoCookie {
 			return nil, "No access_token Cookie present", http.StatusBadRequest
 		}
-		return nil, "Unknwon error in extracting the cookie", http.StatusInternalServerError
+		log.WithFields(log.Fields{
+			"Error": err,
+		}).Error("Unknown error in extracting the cookie")
+		return nil, "Unknown error in extracting the cookie", http.StatusInternalServerError
 	}
 
 	token, err := jwt.ParseWithClaims(access_token, &decoded_token, func(token *jwt.Token) (interface{}, error) {
@@ -101,8 +104,8 @@ func LoginStatus(c *gin.Context) (interface{}, string, int) {
 			"e":            e,
 			"ok":           ok,
 			"e.Errors":     e.Errors,
-		}).Error("Unknwon error in Decrypting token")
-		return nil, "Unknwon error in Decrypting token", http.StatusInternalServerError
+		}).Error("Unknown error in Decrypting token")
+		return nil, "Unknown error in Decrypting token", http.StatusInternalServerError
 	}
 	if !token.Valid {
 		return nil, "Invalid token", http.StatusForbidden
