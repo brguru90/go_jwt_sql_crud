@@ -7,17 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ResponseBody struct {
-	Status  string      `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-
 func CreateResponsePayload(status string, message string, Data interface{}) string {
-	var responseBody ResponseBody
-	responseBody.Data = Data
-	responseBody.Status = status
-	responseBody.Message = message
+
+	responseBody := make(map[string]interface{})
+	responseBody["data"] = Data
+	responseBody["status"] = status
+	responseBody["msg"] = message
 
 	result, _ := json.MarshalIndent(responseBody, "", "  ")
 	return string(result)
@@ -29,14 +24,14 @@ func CreateAndSendResponse(c *gin.Context, HTTP_Status int, status string, messa
 		HTTP_Status = http.StatusOK
 	}
 	if Data == nil {
-		c.JSON(HTTP_Status, gin.H{"status": status, "message": message})
+		c.JSON(HTTP_Status, gin.H{"status": status, "msg": message})
 		return
 	}
 
-	var responseBody ResponseBody
-	responseBody.Data = Data
-	responseBody.Status = status
-	responseBody.Message = message
+	responseBody := make(map[string]interface{})
+	responseBody["data"] = Data
+	responseBody["status"] = status
+	responseBody["msg"] = message
 
 	result, _ := json.MarshalIndent(responseBody, "", "  ")
 
