@@ -21,6 +21,10 @@ func InitApiTest(router *gin.RouterGroup, db_connection *pgxpool.Pool) {
 		views.Login(c, db_connection)
 	})
 
+	router.GET("login_status/", func(c *gin.Context) {
+		views.LoginStatus(c, db_connection)
+	})
+
 	{
 		protected_router := router.Group("", middleware.ValidateToken())
 
