@@ -10,6 +10,7 @@ import (
 )
 
 func SignUp(c *gin.Context, db_connection *pgxpool.Pool) {
+	// in Progress
 
 	var newUserRow NewUserRow
 	if err := c.ShouldBindJSON(&newUserRow); err != nil {
@@ -37,7 +38,6 @@ func Login(c *gin.Context, db_connection *pgxpool.Pool) {
 }
 
 func LoginStatus(c *gin.Context, db_connection *pgxpool.Pool) {
-
 	decoded_token, err, http_status := my_modules.LoginStatus(c)
 	if err != "" {
 		my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)

@@ -110,3 +110,11 @@ func LoginStatus(c *gin.Context) (interface{}, string, int) {
 
 	return decoded_token, "", http.StatusOK
 }
+
+func ValidateCredential() {
+
+}
+
+func EnsureCsrfToken() {
+
+}
