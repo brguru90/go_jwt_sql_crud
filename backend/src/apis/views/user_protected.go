@@ -25,7 +25,7 @@ type UserRow struct {
 func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 	var uuid string = c.Query("uuid")
 	if uuid != "" {
-		var db_query string = fmt.Sprintf(`select * from users where uuid='%s'; `, uuid)
+		var db_query string = fmt.Sprintf(`SELECT * FROM users WHERE uuid='%s'; `, uuid)
 		rows, err := db_connection.Query(context.Background(), db_query)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -61,13 +61,31 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 }
 
 func UpdateUserData(c *gin.Context, db_connection *pgxpool.Pool) {
+
 	var updateWithData UserRow
 	if err := c.ShouldBindJSON(&updateWithData); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
 		return
 	}
 
-	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", updateWithData)
+	const sql_stmt string = `UPDATE users SET email=$2,name=$3,description=$4 WHERE uuid=$1`
+	res, err := db_connection.Exec(context.Background(), sql_stmt, updateWithData.Column_uuid, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+			"sql": fmt.Sprintf(`UPDATE users SET email=%s,name=%s,description=%s WHERE uuid=%s`, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description, updateWithData.Column_uuid),
+		}).Errorln("Failed to update user data")
+		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Failed to update data", nil)
+		return
+	}
+
+	rows_updated := res.RowsAffected()
+
+	var response_data = make(map[string]interface{})
+	response_data["updated_with_data"] = updateWithData
+	response_data["updated_count"] = rows_updated
+
+	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", response_data)
 }
 
 func GetActiveSession(c *gin.Context, db_connection *pgxpool.Pool) {
@@ -77,7 +95,32 @@ func GetActiveSession(c *gin.Context, db_connection *pgxpool.Pool) {
 
 func Deleteuser(c *gin.Context, db_connection *pgxpool.Pool) {
 
-	c.String(http.StatusOK, "Welcome hello")
+	var uuid string = c.Query("uuid")
+
+	if uuid == "" {
+		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "UUID of user is not provided", nil)
+		return
+	}
+
+	const sql_stmt string = `DELETE FROM users WHERE uuid=$1`
+	res, err := db_connection.Exec(context.Background(), sql_stmt, uuid)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+			"sql": fmt.Sprintf(`DELETE FROM users WHERE uuid=%s`, uuid),
+		}).Errorln("Failed to delete user data")
+		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Failed to delete user data", nil)
+		return
+	}
+
+	rows_deleted := res.RowsAffected()
+
+	var response_data = make(map[string]interface{})
+	response_data["deleted_user_with_uuid"] = uuid
+	response_data["updated_count"] = rows_deleted
+
+	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", response_data)
+
 }
 
 func Logout(c *gin.Context, db_connection *pgxpool.Pool) {
