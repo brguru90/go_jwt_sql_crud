@@ -11,7 +11,7 @@ export default function login() {
     const [email, setEmail] = useState(null)
 
     const Login = () => {
-        exeFetch("/api/login", {
+        exeFetch("/api/login/", {
             method: "post",
             headers: {
                 "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export default function login() {
             }),
         })
             .then(({ body }) => {
-                navigate("/user_profile", {
+                navigate("/user_profile/", {
                     state: body.data,
                 })
             })
@@ -29,7 +29,7 @@ export default function login() {
     }
 
     const login_check = () => {
-        exeFetch("/api/login_status")
+        exeFetch("/api/login_status/")
             .then(({ body }) => {
                 console.log("/user_profile")
                 navigate("/user_profile", {

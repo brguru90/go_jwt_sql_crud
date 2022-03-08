@@ -19,7 +19,7 @@ export default function signup() {
             description: description.current.value,
         }
 
-        exeFetch("/api/sign_up", {
+        exeFetch("/api/sign_up/", {
             method: "post",
             headers: {
                 "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export default function signup() {
             body: JSON.stringify(newUserData),
         })
             .then(({ body }) => {
-                navigate("/user_profile", {
+                navigate("/user_profile/", {
                     state: body.data,
                 })
             })

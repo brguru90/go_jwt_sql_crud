@@ -4,21 +4,50 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"learn_go/src/database"
 	"learn_go/src/my_modules"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
 )
 
 func GetUserData(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
-	var uuid string = c.Query("uuid")
+	payload, ok := my_modules.ExtractTokenPayload(c)
+	if !ok {
+		return
+	}
+	var uuid string = payload.UUID
+
+	var _limit int64 = 100
+	var _page int64 = 0
+
+	if c.Query("page") != "" {
+		_page, _ = strconv.ParseInt(c.Query("page"), 10, 64)
+		if c.Query("limit") != "" {
+			_limit, _ = strconv.ParseInt(c.Query("limit"), 10, 64)
+		}
+	}
+
+	var _offset = _limit * (_page - 1)
+
 	if uuid != "" {
-		var db_query string = fmt.Sprintf(`SELECT * FROM users WHERE uuid='%s'; `, uuid)
-		rows, err := db_connection.Query(context.Background(), db_query)
+		var db_query string
+		var rows pgx.Rows
+		var err error
+
+		if _page > 0 {
+			db_query = `SELECT * FROM users LIMIT $1 OFFSET $2; `
+			rows, err = db_connection.Query(context.Background(), db_query, _limit, _offset)
+		} else {
+			db_query = `SELECT * FROM users WHERE uuid=$1`
+			rows, err = db_connection.Query(context.Background(), db_query, uuid)
+		}
+
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
@@ -27,10 +56,10 @@ func GetUserData(c *gin.Context) {
 			my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "No record found", nil)
 			return
 		} else {
-			defer rows.Close()
-			var rowSlice []UserRow
+			defer rows.Close() //importent to prevent connection leak
+			var rowSlice []my_modules.UserRow
 			for rows.Next() {
-				var r UserRow
+				var r my_modules.UserRow
 				err := rows.Scan(&r.Column_id, &r.Column_uuid, &r.Column_name, &r.Column_email, &r.Column_description, &r.Column_createdAt, &r.Column_updatedAt)
 				if err != nil {
 					log.Errorln(fmt.Sprintf("Scan failed: %v\n", err))
@@ -54,13 +83,18 @@ func GetUserData(c *gin.Context) {
 
 func UpdateUserData(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
-	var updateWithData UserRow
+	payload, ok := my_modules.ExtractTokenPayload(c)
+	if !ok {
+		return
+	}
+	var updateWithData my_modules.NewUserRow
 	if err := c.ShouldBindJSON(&updateWithData); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
 		return
 	}
 
 	_time := time.Now()
+	updateWithData.Column_uuid = payload.UUID
 
 	const sql_stmt string = `UPDATE users SET email=$2,name=$3,description=$4,"updatedAt"=$5 WHERE uuid=$1`
 	res, err := db_connection.Exec(context.Background(), sql_stmt, updateWithData.Column_uuid, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description, _time)
@@ -88,7 +122,12 @@ func GetActiveSession(c *gin.Context) {
 
 func Deleteuser(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
-	var uuid string = c.Query("uuid")
+	payload, ok := my_modules.ExtractTokenPayload(c)
+	if !ok {
+		return
+	}
+
+	var uuid string = payload.UUID
 
 	if uuid == "" {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "UUID of user is not provided", nil)
@@ -117,8 +156,9 @@ func Deleteuser(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-
-	c.String(http.StatusOK, "Welcome hello")
+	my_modules.DeleteCookie(c, "access_token")
+	my_modules.DeleteCookie(c, "user_data")
+	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Logged out", nil)
 }
 
 func BlockSession(c *gin.Context) {

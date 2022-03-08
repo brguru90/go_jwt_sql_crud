@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"learn_go/src/my_modules"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -41,9 +43,14 @@ func ApiSpecificMiddleware() gin.HandlerFunc {
 
 func ValidateToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// log.Debugln("ValidateToken,ApiSpecificMiddleware ===>", c.Request.URL.Path)
-		// Before calling handler
-		c.Next()
+		decoded_token, err, http_status, ok := my_modules.LoginStatus(c)
+		if http_status <= 0 || http_status != 200 {
+			my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)
+			c.Abort()
+		} else if ok {
+			c.Set("decoded_token", decoded_token)
+			c.Next()
+		}
 		// After calling handler
 	}
 }

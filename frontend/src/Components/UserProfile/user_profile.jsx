@@ -15,7 +15,7 @@ export default function user_profile() {
     let description = useRef(null)
 
     const gerUserData = () => {
-        exeFetch("/api/user")
+        exeFetch("/api/user/")
             .then(({ body }) => {
                 setUserData(body.data)
             }, () => navigate("/"))
@@ -23,7 +23,7 @@ export default function user_profile() {
     }
 
     const gerUserActiveSessions = () => {
-        exeFetch("/api/user/active_sessions")
+        exeFetch("/api/user/active_sessions/")
             .then(({ body }) => {
                 setUserActiveSessions(body.data)
             }, () => navigate("/"))
@@ -37,7 +37,7 @@ export default function user_profile() {
             description: description.current.value,
         }
 
-        exeFetch("/api/user", {
+        exeFetch("/api/user/", {
             method: "put",
             headers: {
                 "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export default function user_profile() {
     }
 
     const removeAccount = () => {
-        exeFetch("/api/user", {
+        exeFetch("/api/user/", {
             method: "delete",
         })
             .then(({ body }) => {
@@ -67,7 +67,7 @@ export default function user_profile() {
 
 
     const blockToken = (token_id, exp) => {
-        exeFetch("/api/user/block_token", {
+        exeFetch("/api/user/block_token/", {
             method: "post",
             headers: {
                 "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export default function user_profile() {
     }
 
     const Logout = () => {
-        exeFetch("/api/user/logout", {}, () => navigate("/"))
+        exeFetch("/api/user/logout/", {}, () => navigate("/"))
             .then(() => {
                 navigate("/")
             })
@@ -96,12 +96,12 @@ export default function user_profile() {
     let _interval = null
 
     const login_check = () => {
-        exeFetch("/api/login_status", {}, () =>  navigate("/"))
+        exeFetch("/api/login_status/", {}, () =>  navigate("/"))
     }
 
     useEffect(() => {
         console.log("-----------user profile----------")
-        // gerUserData()
+        gerUserData()
         // gerUserActiveSessions()
 
         // if (!_interval) {

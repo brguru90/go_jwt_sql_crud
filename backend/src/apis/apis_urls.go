@@ -11,10 +11,11 @@ import (
 func InitApiTest(router *gin.RouterGroup) {
 
 	router.Use(middleware.ApiSpecificMiddleware())
+
 	router.GET("test/:id", test_api)
 	router.GET("hello/", views.Hello_api)
-	router.GET("sign_up/", views.SignUp)
-	router.GET("login/", views.Login)
+	router.POST("sign_up/", views.SignUp)
+	router.POST("login/", views.Login)
 	router.GET("login_status/", views.LoginStatus)
 
 	{
@@ -22,7 +23,7 @@ func InitApiTest(router *gin.RouterGroup) {
 		protected_router.GET("user/", views.GetUserData)
 		protected_router.PUT("user/", views.UpdateUserData)
 		protected_router.DELETE("user/", views.Deleteuser)
-		protected_router.GET("user/logout/", views.Deleteuser)
+		protected_router.GET("user/logout/", views.Logout)
 	}
 
 }

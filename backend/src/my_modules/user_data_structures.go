@@ -1,5 +1,4 @@
-package views
-
+package my_modules
 
 type UserRow struct {
 	Column_id          int64       `json:"id" binding:"required"`
@@ -10,7 +9,6 @@ type UserRow struct {
 	Column_createdAt   interface{} `json:"createdAt"`
 	Column_updatedAt   interface{} `json:"updatedAt"`
 }
-
 
 type NewUserRow struct {
 	Column_id          int64       `json:"id"`
