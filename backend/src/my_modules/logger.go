@@ -16,6 +16,7 @@ func InitLogger() {
 			FullTimestamp:          true,
 			DisableLevelTruncation: true,
 			PadLevelText:           true,
+			ForceColors:            true,
 		})
 	}
 

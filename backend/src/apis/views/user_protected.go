@@ -80,7 +80,7 @@ func GetUserData(c *gin.Context) {
 				})
 				return
 			} else {
-				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)
+				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice[0])
 				return
 			}
 
@@ -91,17 +91,24 @@ func GetUserData(c *gin.Context) {
 	}
 }
 
+type NewUserDataFormat struct {
+	NewUserData my_modules.NewUserRow `json:"newUserData" binding:"required"`
+}
+
 func UpdateUserData(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)
 	if !ok {
 		return
 	}
-	var updateWithData my_modules.NewUserRow
-	if err := c.ShouldBindJSON(&updateWithData); err != nil {
+
+	var newUserData NewUserDataFormat
+
+	if err := c.ShouldBindJSON(&newUserData); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
 		return
 	}
+	var updateWithData my_modules.NewUserRow = newUserData.NewUserData
 
 	_time := time.Now()
 	updateWithData.Column_uuid = payload.UUID
