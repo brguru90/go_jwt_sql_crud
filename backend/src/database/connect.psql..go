@@ -11,6 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var DB_CONNECTION *pgxpool.Pool
+
 func ConnectPostgres() *pgxpool.Pool {
 
 	// https://github.com/jackc/pgx
@@ -78,6 +80,8 @@ func ConnectPostgres() *pgxpool.Pool {
 
 	InitUserModels(dbpool)
 	InitActiveSessionsModels(dbpool)
+
+	DB_CONNECTION = dbpool
 
 	return dbpool
 }

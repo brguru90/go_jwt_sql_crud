@@ -27,7 +27,7 @@ func main() {
 	var all_router *gin.Engine = gin.Default()
 	all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
 
-	db_connection := database.ConnectPostgres()
+	database.ConnectPostgres()
 
 	{
 		// just grouping, to make it more readable
@@ -38,7 +38,7 @@ func main() {
 		api_router.Use(middleware.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
 			c.String(http.StatusOK, "hi")
 		})
-		apis.InitApiTest(api_router, db_connection) // more apis imported
+		apis.InitApiTest(api_router) // more apis imported
 	}
 
 	if os.Getenv("SERVER_PORT") != "" {

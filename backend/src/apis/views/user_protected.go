@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
+	"learn_go/src/database"
 	"learn_go/src/my_modules"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 )
 
-
-func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
+func GetUserData(c *gin.Context) {
+	db_connection := database.DB_CONNECTION
 	var uuid string = c.Query("uuid")
 	if uuid != "" {
 		var db_query string = fmt.Sprintf(`SELECT * FROM users WHERE uuid='%s'; `, uuid)
@@ -51,8 +51,8 @@ func GetUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 	}
 }
 
-func UpdateUserData(c *gin.Context, db_connection *pgxpool.Pool) {
-
+func UpdateUserData(c *gin.Context) {
+	db_connection := database.DB_CONNECTION
 	var updateWithData UserRow
 	if err := c.ShouldBindJSON(&updateWithData); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
@@ -79,13 +79,12 @@ func UpdateUserData(c *gin.Context, db_connection *pgxpool.Pool) {
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", response_data)
 }
 
-func GetActiveSession(c *gin.Context, db_connection *pgxpool.Pool) {
-
+func GetActiveSession(c *gin.Context) {
 	c.String(http.StatusOK, "Welcome hello")
 }
 
-func Deleteuser(c *gin.Context, db_connection *pgxpool.Pool) {
-
+func Deleteuser(c *gin.Context) {
+	db_connection := database.DB_CONNECTION
 	var uuid string = c.Query("uuid")
 
 	if uuid == "" {
@@ -108,18 +107,18 @@ func Deleteuser(c *gin.Context, db_connection *pgxpool.Pool) {
 
 	var response_data = make(map[string]interface{})
 	response_data["deleted_user_with_uuid"] = uuid
-	response_data["updated_count"] = rows_deleted
+	response_data["deleted_count"] = rows_deleted
 
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", response_data)
 
 }
 
-func Logout(c *gin.Context, db_connection *pgxpool.Pool) {
+func Logout(c *gin.Context) {
 
 	c.String(http.StatusOK, "Welcome hello")
 }
 
-func BlockSession(c *gin.Context, db_connection *pgxpool.Pool) {
+func BlockSession(c *gin.Context) {
 
 	c.String(http.StatusOK, "Welcome hello")
 }

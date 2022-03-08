@@ -5,44 +5,25 @@ import (
 	"learn_go/src/middleware"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 // only the functions whose initial letter is upper case only those can be exportable from package
-func InitApiTest(router *gin.RouterGroup, db_connection *pgxpool.Pool) {
+func InitApiTest(router *gin.RouterGroup) {
 
 	router.Use(middleware.ApiSpecificMiddleware())
 	router.GET("test/:id", test_api)
 	router.GET("hello/", views.Hello_api)
-	router.GET("sign_up/", func(c *gin.Context) {
-		views.SignUp(c, db_connection)
-	})
-	router.GET("login/", func(c *gin.Context) {
-		views.Login(c, db_connection)
-	})
-
-	router.GET("login_status/", func(c *gin.Context) {
-		views.LoginStatus(c, db_connection)
-	})
+	router.GET("sign_up/", views.SignUp)
+	router.GET("login/", views.Login)
+	router.GET("login_status/", views.LoginStatus)
 
 	{
 		protected_router := router.Group("", middleware.ValidateToken())
 
-		protected_router.GET("user/", func(c *gin.Context) {
-			views.GetUserData(c, db_connection)
-		})
-
-		protected_router.PUT("user/", func(c *gin.Context) {
-			views.UpdateUserData(c, db_connection)
-		})
-
-		protected_router.DELETE("user/", func(c *gin.Context) {
-			views.Deleteuser(c, db_connection)
-		})
-
-		protected_router.GET("user/logout/", func(c *gin.Context) {
-			views.Deleteuser(c, db_connection)
-		})
+		protected_router.GET("user/", views.GetUserData)
+		protected_router.PUT("user/", views.UpdateUserData)
+		protected_router.DELETE("user/", views.Deleteuser)
+		protected_router.GET("user/logout/", views.Deleteuser)
 	}
 
 }

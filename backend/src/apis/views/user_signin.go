@@ -6,10 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func SignUp(c *gin.Context, db_connection *pgxpool.Pool) {
+func SignUp(c *gin.Context) {
 	// in Progress
 
 	var newUserRow NewUserRow
@@ -32,12 +31,12 @@ func SignUp(c *gin.Context, db_connection *pgxpool.Pool) {
 	c.String(http.StatusOK, "Signup")
 }
 
-func Login(c *gin.Context, db_connection *pgxpool.Pool) {
+func Login(c *gin.Context) {
 
 	c.String(http.StatusOK, "Welcome hello")
 }
 
-func LoginStatus(c *gin.Context, db_connection *pgxpool.Pool) {
+func LoginStatus(c *gin.Context) {
 	decoded_token, err, http_status := my_modules.LoginStatus(c)
 	if err != "" {
 		my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)
