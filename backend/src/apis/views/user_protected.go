@@ -13,7 +13,7 @@ import (
 )
 
 func GetUserData(c *gin.Context) {
-	db_connection := database.DB_CONNECTION
+	db_connection := database.POSTGRES_DB_CONNECTION
 	var uuid string = c.Query("uuid")
 	if uuid != "" {
 		var db_query string = fmt.Sprintf(`SELECT * FROM users WHERE uuid='%s'; `, uuid)
@@ -52,7 +52,7 @@ func GetUserData(c *gin.Context) {
 }
 
 func UpdateUserData(c *gin.Context) {
-	db_connection := database.DB_CONNECTION
+	db_connection := database.POSTGRES_DB_CONNECTION
 	var updateWithData UserRow
 	if err := c.ShouldBindJSON(&updateWithData); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
@@ -84,7 +84,7 @@ func GetActiveSession(c *gin.Context) {
 }
 
 func Deleteuser(c *gin.Context) {
-	db_connection := database.DB_CONNECTION
+	db_connection := database.POSTGRES_DB_CONNECTION
 	var uuid string = c.Query("uuid")
 
 	if uuid == "" {

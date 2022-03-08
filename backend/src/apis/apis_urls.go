@@ -19,7 +19,6 @@ func InitApiTest(router *gin.RouterGroup) {
 
 	{
 		protected_router := router.Group("", middleware.ValidateToken())
-
 		protected_router.GET("user/", views.GetUserData)
 		protected_router.PUT("user/", views.UpdateUserData)
 		protected_router.DELETE("user/", views.Deleteuser)

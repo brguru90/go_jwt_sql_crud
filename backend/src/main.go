@@ -28,6 +28,7 @@ func main() {
 	all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
 
 	database.ConnectPostgres()
+	database.ConnectRedis()
 
 	{
 		// just grouping, to make it more readable
