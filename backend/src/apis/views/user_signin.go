@@ -23,8 +23,8 @@ func SignUp(c *gin.Context) {
 		return
 	}
 	_time := time.Now()
-	const sql_stmt string = `INSERT INTO users ("name","email","description","uuid","createdAt","updatedAt") VALUES($1,$2,$3,$4,$5,$6) RETURNING id,uuid,name,email,description`
-	err := db_connection.QueryRow(context.Background(), sql_stmt, newUserRow.Column_name, newUserRow.Column_email, newUserRow.Column_description, uuid.New().String(), _time, _time).Scan(&newUserRow.Column_id, &newUserRow.Column_uuid, &newUserRow.Column_name, &newUserRow.Column_email, &newUserRow.Column_description)
+	const sql_stmt string = `INSERT INTO users ("name","email","description","uuid","createdAt","updatedAt") VALUES($1,$2,$3,$4,$5,$6) RETURNING id,uuid,name,email,description,"createdAt","updatedAt"`
+	err := db_connection.QueryRow(context.Background(), sql_stmt, newUserRow.Column_name, newUserRow.Column_email, newUserRow.Column_description, uuid.New().String(), _time, _time).Scan(&newUserRow.Column_id, &newUserRow.Column_uuid, &newUserRow.Column_name, &newUserRow.Column_email, &newUserRow.Column_description, &newUserRow.Column_createdAt, &newUserRow.Column_updatedAt)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"Error": err,
@@ -42,7 +42,10 @@ func SignUp(c *gin.Context) {
 		my_modules.EnsureCsrfToken(c),
 		string(token_payload),
 	)
+
+	newUserRow_json, _ := json.Marshal(newUserRow)
 	my_modules.SetCookie(c, "access_token", access_token, access_token_payload.Exp, true)
+	my_modules.SetCookie(c, "user_data", string(newUserRow_json), access_token_payload.Exp, true)
 
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Regesteration successfully", newUserRow)
 }
