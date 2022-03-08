@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"learn_go/src/database"
 	"learn_go/src/my_modules"
@@ -59,12 +60,14 @@ func UpdateUserData(c *gin.Context) {
 		return
 	}
 
-	const sql_stmt string = `UPDATE users SET email=$2,name=$3,description=$4 WHERE uuid=$1`
-	res, err := db_connection.Exec(context.Background(), sql_stmt, updateWithData.Column_uuid, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description)
+	_time := time.Now()
+
+	const sql_stmt string = `UPDATE users SET email=$2,name=$3,description=$4,"updatedAt"=$5 WHERE uuid=$1`
+	res, err := db_connection.Exec(context.Background(), sql_stmt, updateWithData.Column_uuid, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description, _time)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
-			"sql": fmt.Sprintf(`UPDATE users SET email=%s,name=%s,description=%s WHERE uuid=%s`, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description, updateWithData.Column_uuid),
+			"sql": fmt.Sprintf(`UPDATE users SET email=%s,name=%s,description=%s,updatedAt=%v WHERE uuid=%s`, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description, _time, updateWithData.Column_uuid),
 		}).Errorln("Failed to update user data")
 		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Failed to update data", nil)
 		return

@@ -13,7 +13,7 @@ func Exec_SQL(db_connection *pgxpool.Pool, SQL string) {
 		log.WithFields(log.Fields{
 			"error": err,
 			"SQL":   SQL,
-		}).Errorln("Query failed ==>")
+		}).Warning("Query failed ==>")
 		return
 	} else {
 		log.WithFields(log.Fields{

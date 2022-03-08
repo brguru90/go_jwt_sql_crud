@@ -6,15 +6,17 @@ import (
 	"os"
 	"strings"
 
+	"github.com/jackc/pgtype"
+	pgtypeuuid "github.com/jackc/pgtype/ext/gofrs-uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+
 	log "github.com/sirupsen/logrus"
 )
 
 var POSTGRES_DB_CONNECTION *pgxpool.Pool
 
 func ConnectPostgres() {
-
 	// https://github.com/jackc/pgx
 
 	var DB_USER string = os.Getenv("DB_USER")
@@ -24,6 +26,23 @@ func ConnectPostgres() {
 	var DB_PORT string = os.Getenv("DB_PORT")
 
 	var DB_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DATABASE)
+	dbconfig, err := pgxpool.ParseConfig(DB_URL)
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error":  err,
+			"DB_URL": DB_URL,
+		}).Error("Unable to connect to database ==>")
+	}
+
+	dbconfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		conn.ConnInfo().RegisterDataType(pgtype.DataType{
+			Value: &pgtypeuuid.UUID{},
+			Name:  "uuid",
+			OID:   pgtype.UUIDOID,
+		})
+		return nil
+	}
 
 	log.Infoln(fmt.Sprintf("Connecting to %s", DB_URL))
 	dbpool, err := pgxpool.Connect(context.Background(), DB_URL)

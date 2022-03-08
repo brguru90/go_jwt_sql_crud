@@ -10,8 +10,9 @@ import (
 var REDIS_DB_CONNECTION *redis.Client
 
 func ConnectRedis() {
-	log.Info("Connecting to Redis....")
+	// https://github.com/go-redis/redis
 
+	log.Info("Connecting to Redis....")
 	var ctx = context.Background()
 	REDIS_DB_CONNECTION = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
