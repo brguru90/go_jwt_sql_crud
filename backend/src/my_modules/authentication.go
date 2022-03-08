@@ -1,6 +1,8 @@
 package my_modules
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,6 +14,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var JWT_TOKEN_EXPIRE_IN_MINS, _ = strconv.ParseInt(os.Getenv("JWT_TOKEN_EXPIRE_IN_MINS"), 10, 64)
+var JWT_TOKEN_EXPIRE = JWT_TOKEN_EXPIRE_IN_MINS * 60 * 1000
+var JWT_SECRET_KEY string = os.Getenv("JWT_SECRET_KEY")
+
 type AccessToken struct {
 	Data       string `json:"data" binding:"required"`
 	Uname      string `json:"uname" binding:"required"`
@@ -21,9 +27,11 @@ type AccessToken struct {
 	Csrf_token string `json:"csrf_token" binding:"required"`
 }
 
-var JWT_TOKEN_EXPIRE_IN_MINS, _ = strconv.ParseInt(os.Getenv("JWT_TOKEN_EXPIRE_IN_MINS"), 10, 64)
-var JWT_TOKEN_EXPIRE = JWT_TOKEN_EXPIRE_IN_MINS * 60 * 1000
-var JWT_SECRET_KEY string = os.Getenv("JWT_SECRET_KEY")
+func randomBytes(size int) (blk []byte, err error) {
+	blk = make([]byte, size)
+	_, err = rand.Read(blk)
+	return
+}
 
 func GenerateAccessToken(uname string, csrf_token string, data string) (string, AccessToken) {
 	time_now := time.Now().UnixMilli()
@@ -114,10 +122,19 @@ func LoginStatus(c *gin.Context) (interface{}, string, int) {
 	return decoded_token, "", http.StatusOK
 }
 
-func ValidateCredential() {
+func ValidateCredential(c *gin.Context) {
 
 }
 
-func EnsureCsrfToken() {
-
+func EnsureCsrfToken(c *gin.Context) string {
+	var csrf_token string = ""
+	if _rand, r_err := randomBytes(100); r_err == nil {
+		csrf_token = base64.StdEncoding.EncodeToString(_rand)
+		c.Header("csrf_token", csrf_token)
+	} else {
+		log.WithFields(log.Fields{
+			"err": r_err,
+		}).Error("Error in generating csrf token")
+	}
+	return csrf_token
 }

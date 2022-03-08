@@ -24,7 +24,7 @@ func SignUp(c *gin.Context, db_connection *pgxpool.Pool) {
 	})
 	access_token, access_token_payload := my_modules.GenerateAccessToken(
 		newUserRow.Column_email,
-		"1234",
+		my_modules.EnsureCsrfToken(c),
 		string(token_payload),
 	)
 	my_modules.SetCookie(c, "access_token", access_token, access_token_payload.Exp, true)
