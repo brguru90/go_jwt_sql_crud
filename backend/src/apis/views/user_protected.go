@@ -41,7 +41,7 @@ func GetUserData(c *gin.Context) {
 		var err error
 
 		if _page > 0 {
-			db_query = `SELECT * FROM users LIMIT $1 OFFSET $2; `
+			db_query = `SELECT * FROM users ORDER BY id OFFSET $2 LIMIT $1; `
 			rows, err = db_connection.Query(context.Background(), db_query, _limit, _offset)
 		} else {
 			db_query = `SELECT * FROM users WHERE uuid=$1`
@@ -72,8 +72,18 @@ func GetUserData(c *gin.Context) {
 				log.Errorln(fmt.Sprintf("Row Err failed: %v\n", err))
 			}
 
-			my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)
-			return
+			if _page > 0 {
+				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", map[string]interface{}{
+					"users":    rowSlice,
+					"cur_page": _page,
+					"db_query": db_query,
+				})
+				return
+			} else {
+				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)
+				return
+			}
+
 		}
 	} else {
 		my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "Didn't got UUID", nil)
