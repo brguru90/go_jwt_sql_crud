@@ -65,7 +65,6 @@ export default function user_profile() {
     }
 
 
-
     const blockToken = (token_id, exp) => {
         exeFetch("/api/user/block_token/", {
             method: "post",

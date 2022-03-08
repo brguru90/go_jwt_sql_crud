@@ -167,6 +167,10 @@ func Deleteuser(c *gin.Context) {
 	var response_data = make(map[string]interface{})
 	response_data["deleted_user_with_uuid"] = uuid
 	response_data["deleted_count"] = rows_deleted
+	if rows_deleted > 0 {
+		my_modules.DeleteCookie(c, "access_token")
+		my_modules.DeleteCookie(c, "user_data")
+	}
 
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", response_data)
 
