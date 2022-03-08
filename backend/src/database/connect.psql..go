@@ -73,7 +73,7 @@ func ConnectPostgres() {
 
 			log.Infoln(fmt.Sprintf("Creating %s Database ", DATABASE))
 			var create_db string = fmt.Sprintf("CREATE DATABASE %s;", DATABASE)
-			_, err2 := _db_connection.Query(context.Background(), create_db)
+			_rows, err2 := _db_connection.Query(context.Background(), create_db)
 			if err2 != nil {
 				log.WithFields(log.Fields{
 					"error": err2,
@@ -81,6 +81,7 @@ func ConnectPostgres() {
 				}).Fatalln("Unable to create Database ==>")
 				os.Exit(1)
 			}
+			defer _rows.Close()
 			_db_connection.Close(context.Background())
 		}
 

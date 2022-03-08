@@ -7,7 +7,7 @@ import (
 
 	"learn_go/src/apis"
 	"learn_go/src/database"
-	"learn_go/src/middleware"
+	"learn_go/src/middlewares"
 	"learn_go/src/my_modules"
 
 	"github.com/gin-contrib/cors"
@@ -35,8 +35,8 @@ func main() {
 		api_router := all_router.Group("/api")
 
 		all_router.Use(cors.Default())
-		api_router.Use(middleware.FindUserAgentMiddleware()) // an example for global middleware on api_router
-		api_router.Use(middleware.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
+		api_router.Use(middlewares.FindUserAgentMiddleware()) // an example for global middleware on api_router
+		api_router.Use(middlewares.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
 			c.String(http.StatusOK, "hi")
 		})
 		apis.InitApiTest(api_router) // more apis imported

@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"learn_go/src/my_modules"
