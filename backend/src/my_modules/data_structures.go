@@ -25,10 +25,10 @@ type ActiveSessionsRow struct {
 	Column_uuid      string      `json:"uuid"`
 	Column_user_uuid string      `json:"user_uuid"`
 	Column_token_id  string      `json:"token_id" binding:"required"`
-	Column_ua        string      `json:"ua" binding:"required"`
-	Column_ip        string      `json:"ip" binding:"required"`
+	Column_ua        string      `json:"ua"`
+	Column_ip        string      `json:"ip"`
 	Column_exp       int64       `json:"exp" binding:"required"`
-	Column_status    string      `json:"status" binding:"required"`
+	Column_status    string      `json:"status"`
 	Column_createdAt interface{} `json:"createdAt"`
 	Column_updatedAt interface{} `json:"updatedAt"`
 }

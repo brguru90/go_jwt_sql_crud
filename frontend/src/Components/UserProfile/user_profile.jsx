@@ -103,15 +103,15 @@ export default function user_profile() {
         gerUserData()
         gerUserActiveSessions()
 
-        // if (!_interval) {
-        //     _interval = setInterval(() => {
-        //         login_check()
-        //     }, 2000);
-        // }
+        if (!_interval) {
+            _interval = setInterval(() => {
+                login_check()
+            }, 2000);
+        }
 
-        // return () => {
-        //     clearInterval(_interval)
-        // }
+        return () => {
+            clearInterval(_interval)
+        }
 
 
     }, [])
@@ -303,7 +303,7 @@ export default function user_profile() {
                                         return (
                                             <tr key={token_id}>
                                                 <td >
-                                                   {status=="active" && <input type="button" value="delete" onClick={() => blockToken(token_id, exp)} />} 
+                                                   {status=="active" && <input type="button" value={"Block & Remove"} onClick={() => blockToken(token_id, exp)} />} 
                                                 </td>
                                                 <td className="ip">{ip}</td>
                                                 <td>{token_id}</td>

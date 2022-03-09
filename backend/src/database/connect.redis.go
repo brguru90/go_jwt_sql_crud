@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +22,7 @@ func ConnectRedis() {
 	})
 
 	_ping := REDIS_DB_CONNECTION.Ping(ctx)
-	err := REDIS_DB_CONNECTION.Set(ctx, "test_connection", "value", 0).Err()
+	err := REDIS_DB_CONNECTION.Set(ctx, "test_connection", "value", 5*time.Minute).Err()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"REDIS_DB_CONNECTION": REDIS_DB_CONNECTION,

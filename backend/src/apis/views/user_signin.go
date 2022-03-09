@@ -74,7 +74,7 @@ func Login(c *gin.Context) {
 				"Error": err,
 				"Email": userEmailID.Email,
 			}).Warning("Error in finding user email")
-			my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid credential", nil)
+			my_modules.CreateAndSendResponse(c, http.StatusForbidden, "error", "Invalid credential", nil)
 			return
 		}
 		log.WithFields(log.Fields{
@@ -105,12 +105,12 @@ func Login(c *gin.Context) {
 }
 
 func LoginStatus(c *gin.Context) {
-	_, err, http_status, ok := my_modules.LoginStatus(c)
+	decoded_token, err, http_status, ok := my_modules.LoginStatus(c)
 	if err != "" {
 		my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)
 		return
 	}
 	if ok {
-		my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "active", nil)
+		my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "active", decoded_token.Data)
 	}
 }

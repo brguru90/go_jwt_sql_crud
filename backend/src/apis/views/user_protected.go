@@ -21,7 +21,7 @@ func GetUserData(c *gin.Context) {
 	if !ok {
 		return
 	}
-	var uuid string = payload.UUID
+	var uuid string = payload.Data.UUID
 
 	var _limit int64 = 100
 	var _page int64 = 0
@@ -113,7 +113,7 @@ func UpdateUserData(c *gin.Context) {
 	var updateWithData my_modules.NewUserRow = newUserData.NewUserData
 
 	_time := time.Now()
-	updateWithData.Column_uuid = payload.UUID
+	updateWithData.Column_uuid = payload.Data.UUID
 
 	const sql_stmt string = `UPDATE users SET email=$2,name=$3,description=$4,"updatedAt"=$5 WHERE uuid=$1`
 	res, err := db_connection.Exec(context.Background(), sql_stmt, updateWithData.Column_uuid, updateWithData.Column_email, updateWithData.Column_name, updateWithData.Column_description, _time)
@@ -141,10 +141,10 @@ func GetActiveSession(c *gin.Context) {
 	if !ok {
 		return
 	}
-	var uuid string = payload.UUID
+	var uuid string = payload.Data.UUID
 
-	db_query := `SELECT * FROM active_sessions WHERE user_uuid=$1`
-	rows, err := db_connection.Query(c.Request.Context(), db_query, uuid)
+	db_query := `SELECT * FROM active_sessions WHERE user_uuid=$1 and token_id!=$2`
+	rows, err := db_connection.Query(c.Request.Context(), db_query, uuid, payload.Token_id)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -181,7 +181,7 @@ func Deleteuser(c *gin.Context) {
 		return
 	}
 
-	var uuid string = payload.UUID
+	var uuid string = payload.Data.UUID
 
 	if uuid == "" {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "UUID of user is not provided", nil)
@@ -219,7 +219,62 @@ func Logout(c *gin.Context) {
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Logged out", nil)
 }
 
-func BlockSession(c *gin.Context) {
+func updateActiveSession(activeSessionsRow my_modules.ActiveSessionsRow, status string) (int64, error) {
+	db_connection := database.POSTGRES_DB_CONNECTION
 
-	c.String(http.StatusOK, "Welcome hello")
+	var sql_stmt string = `UPDATE active_sessions SET status=$1 WHERE token_id=$2 AND user_uuid=$3 AND exp=$4`
+	if status == "blocked" {
+		sql_stmt += ` AND status='active'`
+	}
+	res, err := db_connection.Exec(context.Background(), sql_stmt, status, activeSessionsRow.Column_token_id, activeSessionsRow.Column_user_uuid, activeSessionsRow.Column_exp)
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+			"sql": fmt.Sprintf(`UPDATE active_sessions SET status=%s WHERE token_id=%s,user_uuid=%s,exp=%d,status="active"`, "blocked", activeSessionsRow.Column_token_id, activeSessionsRow.Column_user_uuid, activeSessionsRow.Column_exp),
+		}).Errorln("Failed to update user data")
+		return -1, err
+	}
+	rows_updated := res.RowsAffected()
+	return rows_updated, nil
+}
+
+func BlockSession(c *gin.Context) {
+	redis_db_connection := database.REDIS_DB_CONNECTION
+	payload, ok := my_modules.ExtractTokenPayload(c)
+	if !ok {
+		return
+	}
+
+	var activeSessionsRow my_modules.ActiveSessionsRow
+	if err := c.ShouldBindJSON(&activeSessionsRow); err != nil {
+		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
+		return
+	}
+	activeSessionsRow.Column_user_uuid = payload.Data.UUID
+
+	rows_updated, err := updateActiveSession(activeSessionsRow, "blocked")
+	if err != nil {
+		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Failed to update data", nil)
+		return
+	}
+	if rows_updated <= 0 {
+		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Token doesn't exists/Already blacklisted", nil)
+		return
+	}
+	var exp_sec time.Duration = time.UnixMilli(activeSessionsRow.Column_exp).Sub(time.Now())
+	r_err := redis_db_connection.SetEX(context.Background(), activeSessionsRow.Column_token_id, activeSessionsRow.Column_user_uuid,
+		exp_sec).Err()
+	if r_err != nil {
+		rows_updated, err := updateActiveSession(activeSessionsRow, "active")
+		log.WithFields(log.Fields{
+			"redis_err":        r_err,
+			"sql_err":          err,
+			"sql_rows_updated": rows_updated,
+		}).Errorln("Failed to insert data on redis")
+		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Failed to blacklist the session", nil)
+		return
+	}
+
+	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Blocked", rows_updated)
 }

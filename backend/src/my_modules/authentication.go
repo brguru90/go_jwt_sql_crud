@@ -174,20 +174,19 @@ func LoginStatus(c *gin.Context) (AccessToken, string, int, bool) {
 		return AccessToken{}, "unAuthorized", http.StatusForbidden, false
 	}
 
-	decoded_token_json, _ := json.Marshal(token_claims.AccessToken)
-	_, r_err := database.REDIS_DB_CONNECTION.Get(context.Background(), string(decoded_token_json)).Result()
+	_, r_err := database.REDIS_DB_CONNECTION.Get(context.Background(), token_claims.AccessToken.Token_id).Result()
 	if r_err == nil {
 		return token_claims.AccessToken, "Session blocked", http.StatusForbidden, false
 	}
 	return token_claims.AccessToken, "", http.StatusOK, true
 }
 
-func ExtractTokenPayload(c *gin.Context) (TokenPayload, bool) {
+func ExtractTokenPayload(c *gin.Context) (AccessToken, bool) {
 	c_data, ok := c.Get("decoded_token")
 	if !ok {
 		CreateAndSendResponse(c, http.StatusOK, "error", "Not able to get user data from current session", nil)
 		c.Abort()
-		return TokenPayload{}, false
+		return AccessToken{}, false
 	}
-	return c_data.(AccessToken).Data, true
+	return c_data.(AccessToken), true
 }

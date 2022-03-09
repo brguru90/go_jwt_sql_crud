@@ -24,7 +24,7 @@ func InitApiTest(router *gin.RouterGroup) {
 		protected_router.PUT("user/", views.UpdateUserData)
 		protected_router.DELETE("user/", views.Deleteuser)
 		protected_router.GET("user/active_sessions/", views.GetActiveSession)
-		protected_router.GET("user/block_token/", views.BlockSession)
+		protected_router.POST("user/block_token/", views.BlockSession)
 		protected_router.GET("user/logout/", views.Logout)
 	}
 
