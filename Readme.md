@@ -1,4 +1,4 @@
-# Testing Configuration
+# Testing Configuration [Benchmark]
 
 ```
   1. Postgres allocated buffer 2GB
@@ -15,6 +15,7 @@
 ## 4. Go run command [Will be used in comparison]
 
 ### ROW Count =  1220001  
+### gin framework
 
 ```
 This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
