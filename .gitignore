@@ -8,3 +8,4 @@ frontend/yarn.lock
 yarn.lock
 backend/myenv
 frontend/build
+backend/go_server
