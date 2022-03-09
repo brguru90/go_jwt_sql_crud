@@ -1,4 +1,4 @@
-# Testing Configuration [Benchmark]
+# Testing Configuration [Go gin framework Benchmark]
 
 ```
   1. Postgres allocated buffer 2GB
