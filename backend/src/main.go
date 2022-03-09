@@ -20,6 +20,7 @@ var SERVER_PORT string = "8000"
 func main() {
 
 	my_modules.InitLogger()
+	my_modules.InitCronJobs()
 
 	// https://github.com/gin-gonic/gin
 
