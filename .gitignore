@@ -6,3 +6,4 @@ backend/go.sum
 backend/yarn.lock
 frontend/yarn.lock
 yarn.lock
+backend/myenv
