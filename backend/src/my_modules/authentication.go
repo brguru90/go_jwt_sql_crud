@@ -54,12 +54,21 @@ func GenerateAccessToken(uname string, csrf_token string, data TokenPayload) (st
 		token_id = data.UUID + "_" + base64.StdEncoding.EncodeToString(_rand) + "_" + string(time_now)
 	}
 
-	var accessTokenPayload AccessTokenClaims
-	accessTokenPayload.Uname = uname
-	accessTokenPayload.Token_id = token_id
-	accessTokenPayload.Data = data
-	accessTokenPayload.IssuedAtTime = time_now
-	accessTokenPayload.Exp = time_now + JWT_TOKEN_EXPIRE
+	var accessTokenPayload AccessTokenClaims = AccessTokenClaims{
+		AccessToken: AccessToken{
+			Uname:        uname,
+			Token_id:     token_id,
+			Data:         data,
+			IssuedAtTime: time_now,
+			Exp:          time_now + JWT_TOKEN_EXPIRE,
+		},
+	}
+
+	// accessTokenPayload.Uname = uname
+	// accessTokenPayload.Token_id = token_id
+	// accessTokenPayload.Data = data
+	// accessTokenPayload.IssuedAtTime = time_now
+	// accessTokenPayload.Exp = time_now + JWT_TOKEN_EXPIRE
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenPayload)
 	token_string, token_err := token.SignedString([]byte(JWT_SECRET_KEY))

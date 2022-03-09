@@ -43,10 +43,10 @@ func GetUserData(c *gin.Context) {
 			// for now lets assume admin as current use
 			var _offset = _limit * (_page - 1)
 			db_query = `SELECT * FROM users ORDER BY id OFFSET $2 LIMIT $1; `
-			rows, err = db_connection.Query(context.Background(), db_query, _limit, _offset)
+			rows, err = db_connection.Query(c.Request.Context(), db_query, _limit, _offset)
 		} else {
 			db_query = `SELECT * FROM users WHERE uuid=$1`
-			rows, err = db_connection.Query(context.Background(), db_query, uuid)
+			rows, err = db_connection.Query(c.Request.Context(), db_query, uuid)
 		}
 
 		if err != nil {
@@ -54,7 +54,7 @@ func GetUserData(c *gin.Context) {
 				"error": err,
 				"query": db_query,
 			}).Errorln("QueryRow failed ==>")
-			my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "No record found", nil)
+			my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "No record found", nil)
 			return
 		} else {
 			defer rows.Close() //importent to prevent connection leak
@@ -70,10 +70,12 @@ func GetUserData(c *gin.Context) {
 			// log.Debugln("type=%T\nresult=%v", rowSlice, rowSlice)
 
 			if err := rows.Err(); err != nil {
-				log.Errorln(fmt.Sprintf("Row Err failed: %v\n", err))
+				log.Errorln(fmt.Sprintf("Row Err in rows.Next/rows.Scan failed: %v\n", err))
+				my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Error in retriving user data", nil)
 			}
 
 			if _page > 0 {
+				log.Errorln(fmt.Sprintf("GetUserData - Rows count: %v\n", len(rowSlice)))
 				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", map[string]interface{}{
 					"users":    rowSlice,
 					"cur_page": _page,
@@ -86,7 +88,7 @@ func GetUserData(c *gin.Context) {
 
 		}
 	} else {
-		my_modules.CreateAndSendResponse(c, http.StatusOK, "error", "Didn't got UUID", nil)
+		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Didn't got UUID", nil)
 		return
 	}
 }
