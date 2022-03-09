@@ -7,3 +7,4 @@ backend/yarn.lock
 frontend/yarn.lock
 yarn.lock
 backend/myenv
+frontend/build
