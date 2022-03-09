@@ -262,7 +262,7 @@ func BlockSession(c *gin.Context) {
 		my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Token doesn't exists/Already blacklisted", nil)
 		return
 	}
-	var exp_sec time.Duration = time.UnixMilli(activeSessionsRow.Column_exp).Sub(time.Now())
+	var exp_sec time.Duration = time.UnixMilli(activeSessionsRow.Column_exp).UTC().Sub(time.Now().UTC())
 	r_err := redis_db_connection.SetEX(context.Background(), activeSessionsRow.Column_token_id, activeSessionsRow.Column_user_uuid,
 		exp_sec).Err()
 	if r_err != nil {
