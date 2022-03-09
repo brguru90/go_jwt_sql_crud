@@ -51,7 +51,7 @@ func GenerateAccessToken(uname string, csrf_token string, data TokenPayload) (st
 	token_id := ""
 
 	if _rand, r_err := randomBytes(100); r_err == nil {
-		token_id = data.UUID + "_" + base64.StdEncoding.EncodeToString(_rand) + "_" + string(time_now)
+		token_id = data.UUID + "_" + base64.StdEncoding.EncodeToString(_rand) + "_" + strconv.Itoa(int(time_now))
 	}
 
 	var accessTokenPayload AccessTokenClaims = AccessTokenClaims{
@@ -134,7 +134,7 @@ func Authenticate(c *gin.Context, newUserRow NewUserRow) AccessToken {
 	)
 	newUserRow_json, _ := json.Marshal(newUserRow)
 	SetCookie(c, "access_token", access_token, access_token_payload.Exp, true)
-	SetCookie(c, "user_data", string(newUserRow_json), access_token_payload.Exp, true)
+	SetCookie(c, "user_data", string(newUserRow_json), access_token_payload.Exp, false)
 	return access_token_payload.AccessToken
 }
 

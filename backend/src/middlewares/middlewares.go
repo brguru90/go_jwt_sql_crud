@@ -52,6 +52,5 @@ func ValidateToken() gin.HandlerFunc {
 			c.Set("decoded_token", decoded_token)
 			c.Next()
 		}
-		// After calling handler
 	}
 }

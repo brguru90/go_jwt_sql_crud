@@ -136,7 +136,42 @@ func UpdateUserData(c *gin.Context) {
 }
 
 func GetActiveSession(c *gin.Context) {
-	c.String(http.StatusOK, "Welcome hello")
+	db_connection := database.POSTGRES_DB_CONNECTION
+	payload, ok := my_modules.ExtractTokenPayload(c)
+	if !ok {
+		return
+	}
+	var uuid string = payload.UUID
+
+	db_query := `SELECT * FROM active_sessions WHERE user_uuid=$1`
+	rows, err := db_connection.Query(c.Request.Context(), db_query, uuid)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+			"query": db_query,
+		}).Errorln("QueryRow failed ==>")
+		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "No record found", nil)
+		return
+	} else {
+		defer rows.Close() //importent to prevent connection leak
+		var rowSlice []my_modules.ActiveSessionsRow
+		for rows.Next() {
+			var r my_modules.ActiveSessionsRow
+			err := rows.Scan(&r.Column_id, &r.Column_uuid, &r.Column_user_uuid, &r.Column_token_id, &r.Column_ua, &r.Column_ip, &r.Column_exp, &r.Column_status, &r.Column_createdAt, &r.Column_updatedAt)
+			if err != nil {
+				log.Errorln(fmt.Sprintf("Scan failed: %v\n", err))
+			}
+			rowSlice = append(rowSlice, r)
+		}
+
+		if err := rows.Err(); err != nil {
+			log.Errorln(fmt.Sprintf("Row Err in rows.Next/rows.Scan failed: %v\n", err))
+			my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Error in retriving active session", nil)
+		}
+
+		my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)
+		return
+	}
 }
 
 func Deleteuser(c *gin.Context) {
