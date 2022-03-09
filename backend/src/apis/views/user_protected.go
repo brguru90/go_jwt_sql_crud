@@ -50,10 +50,12 @@ func GetUserData(c *gin.Context) {
 		}
 
 		if err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-				"query": db_query,
-			}).Errorln("QueryRow failed ==>")
+			if err != context.Canceled {
+				log.WithFields(log.Fields{
+					"error": err,
+					"query": db_query,
+				}).Errorln("QueryRow failed ==>")
+			}
 			my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "No record found", nil)
 			return
 		} else {
@@ -70,7 +72,9 @@ func GetUserData(c *gin.Context) {
 			// log.Debugln("type=%T\nresult=%v", rowSlice, rowSlice)
 
 			if err := rows.Err(); err != nil {
-				log.Errorln(fmt.Sprintf("Row Err in rows.Next/rows.Scan failed: %v\n", err))
+				if err != context.Canceled {
+					log.Errorln(fmt.Sprintf("Row Err in rows.Next/rows.Scan failed: %v\n", err))
+				}
 				my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Error in retriving user data", nil)
 				return
 			}
@@ -169,8 +173,6 @@ func GetActiveSession(c *gin.Context) {
 			my_modules.CreateAndSendResponse(c, http.StatusInternalServerError, "error", "Error in retriving active session", nil)
 			return
 		}
-
-		log.Infoln(fmt.Sprintf("rowSlice: %v\n", rowSlice))
 
 		my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", rowSlice)
 		return

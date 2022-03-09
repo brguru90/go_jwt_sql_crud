@@ -22,11 +22,23 @@ func main() {
 	my_modules.InitLogger()
 	my_modules.InitCronJobs()
 
+	var all_router *gin.Engine = gin.Default()
+
+	if os.Getenv("DISABLE_COLOR") == "true" {
+		gin.DisableConsoleColor()
+	} else {
+		gin.ForceConsoleColor()
+	}
+
+	if os.Getenv("APP_ENV") == "production" {
+		all_router = gin.New()
+	}
+
 	// https://github.com/gin-gonic/gin
 
 	// all_router = gin.New()
-	var all_router *gin.Engine = gin.Default()
-	all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
+	// all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
+	all_router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
 
 	database.ConnectPostgres()
 	database.ConnectRedis()

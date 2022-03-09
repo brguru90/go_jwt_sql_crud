@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"learn_go/src/my_modules"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -9,11 +10,13 @@ import (
 
 func FindUserAgentMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.WithFields(log.Fields{
-			"path":           c.FullPath(),
-			"User Agent":     c.GetHeader("User-Agent"),
-			"Request Method": c.Request.Method,
-		}).Infoln("API Request ==>")
+		if os.Getenv("APP_ENV") != "production" {
+			log.WithFields(log.Fields{
+				"path":           c.FullPath(),
+				"User Agent":     c.GetHeader("User-Agent"),
+				"Request Method": c.Request.Method,
+			}).Infoln("API Request ==>")
+		}
 		// Before calling handler
 		c.Next()
 		// After calling handler

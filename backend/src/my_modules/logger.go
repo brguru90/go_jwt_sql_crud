@@ -7,11 +7,11 @@ import (
 )
 
 func InitLogger() {
-	log.SetLevel(log.DebugLevel)
 
 	if os.Getenv("APP_ENV") == "production" {
 		log.SetFormatter(&log.JSONFormatter{})
 	} else {
+		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{
 			FullTimestamp:          true,
 			DisableLevelTruncation: true,

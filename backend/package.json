@@ -6,12 +6,15 @@
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^2.0.15",
+    "npm-run": "^5.0.1",
     "npm-run-all": "^4.1.5"
   },
   "scripts": {
     "start": "nodemon --exec go run src/main.go --signal SIGTERM",
-    "go_init":"go mod init learn_go",
-    "resolve_dependencies":"go mod tidy",
-    "install": "npm-run-all  --serial --continue-on-error go_init resolve_dependencies"
+    "go_init": "go mod init learn_go",
+    "resolve_dependencies": "go mod tidy",
+    "install": "npm-run-all  --serial --continue-on-error go_init resolve_dependencies",
+    "build": "go build -v -o go_server src/main.go",
+    "start_prod": "npm-run ./go_server"
   }
 }
