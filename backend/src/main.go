@@ -32,6 +32,7 @@ func main() {
 
 	if os.Getenv("APP_ENV") == "production" {
 		all_router = gin.New()
+		all_router.Use(gin.Recovery())
 	}
 
 	// https://github.com/gin-gonic/gin
