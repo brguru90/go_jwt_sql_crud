@@ -12,7 +12,7 @@ import (
 func ClearExpiredToken() {
 	_time := time.Now()
 	log.WithFields(log.Fields{
-		"time": _time.UnixMilli(),
+		"time": _time,
 	}).Debug(" -- ClearExpiredToken Cron job started -- ")
 
 	db_connection := database.POSTGRES_DB_CONNECTION
