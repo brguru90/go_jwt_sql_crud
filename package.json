@@ -4,24 +4,38 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "env-cmd -f .env concurrently 'yarn --cwd ./frontend/ start' 'yarn --cwd ./backend/ start'",
+    "install": "npm-run-all  --serial install_frontend install_backend",
     "start_frontend": "env-cmd -f .env  yarn --cwd ./frontend/ start",
     "start_backend": "env-cmd -f .env yarn --cwd ./backend/ start",
-    "start": "env-cmd -f .env concurrently 'yarn --cwd ./frontend/ start' 'yarn --cwd ./backend/ start'",
     "install_frontend": "yarn --cwd ./frontend/ install",
     "install_backend": "yarn --cwd ./backend/ install",
-    "install":"npm-run-all  --serial install_frontend install_backend",
-    "test_backend":"APP_ENV=production GIN_MODE=release yarn --cwd ./backend/ test",
-    "test":"env-cmd -f .env  npm-run-all  --serial test_backend",
-    "build_frontend":"env-cmd -f .env_prod yarn --cwd ./frontend/ build",
-    "build_backend":"env-cmd -f .env_prod yarn --cwd ./backend/ build",
-    "build":"env-cmd -f .env_prod concurrently 'yarn build_frontend' 'yarn build_backend'",
-    "start_prod":"env-cmd -f .env_prod  yarn --cwd ./backend/ start_prod"
+    "@1": "====================================================================================",
+    "test": "env-cmd -f .env  npm-run-all  --serial test_backend",
+    "test_backend": "APP_ENV=production GIN_MODE=release yarn --cwd ./backend/ test",
+    "@2": "====================================================================================",
+    "build": "concurrently 'yarn build_frontend' 'yarn build_backend'",
+    "build_frontend": "env-cmd -f .env_prod yarn --cwd ./frontend/ build",
+    "build_backend": "env-cmd -f .env_prod yarn --cwd ./backend/ build",
+    "@3": "====================================================================================",
+    "start_prod": "env-cmd -f .env_prod  yarn --cwd ./backend/ start_prod",
+    "@4": "====================================================================================",
+    "enable_prod": "npm-run-all --serial 'install_prod --env env_pm2' autostart_prod pm2_save pm2_list",
+    "disable_prod": "npm-run-all --serial 'uninstall_prod --env env_pm2' remove_autostart_prod pm2_save pm2_list",
+    "restart_prod": "npm-run-all --serial disable_prod enable_prod",
+    "install_prod": "env-cmd -f .env_prod pm2 start ecosystem.config.js",
+    "uninstall_prod": "env-cmd -f .env_prod pm2 stop ecosystem.config.js",
+    "autostart_prod": "pm2 startup",
+    "remove_autostart_prod": "pm2 unstartup",
+    "pm2_save": "pm2 save",
+    "pm2_list": "pm2 list"
   },
   "author": "Guruprasad BR",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^7.0.0",
     "env-cmd": "^10.1.0",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "pm2": "^5.2.0"
   }
 }
