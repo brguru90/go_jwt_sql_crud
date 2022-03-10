@@ -12,7 +12,4 @@ func InitCronJobs() {
 	CRON_JOBS = cron.New()
 	CRON_JOBS.AddFunc("*/1 * * * *", app_cron_jobs.ClearExpiredToken)
 	CRON_JOBS.Start()
-	// for i := 0; i < 100; i++ {
-	// 	go app_cron_jobs.ClearExpiredToken()
-	// }
 }

@@ -22,7 +22,7 @@ func main() {
 	my_modules.InitLogger()
 	database.ConnectPostgres()
 	database.ConnectRedis()
-	my_modules.InitCronJobs()
+	go my_modules.InitCronJobs()
 
 	var all_router *gin.Engine = gin.Default()
 
