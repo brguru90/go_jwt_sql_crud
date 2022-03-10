@@ -9,3 +9,6 @@ yarn.lock
 backend/myenv
 frontend/build
 backend/go_server
+backend/package-lock.json
+frontend/package-lock.json
+package-lock.json

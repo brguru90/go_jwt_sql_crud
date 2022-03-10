@@ -18,6 +18,13 @@
 ### gin framework
 
 ```
+1. JWT auth + redis block list
+2. Single record from DB at a time on 2nd benchmark  
+3. 20 record from starting
+4. 20 record from some where before end
+```
+
+```
 This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
