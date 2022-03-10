@@ -20,6 +20,8 @@ var SERVER_PORT string = "8000"
 func main() {
 
 	my_modules.InitLogger()
+	database.ConnectPostgres()
+	database.ConnectRedis()
 	my_modules.InitCronJobs()
 
 	var all_router *gin.Engine = gin.Default()
@@ -30,7 +32,7 @@ func main() {
 		gin.ForceConsoleColor()
 	}
 
-	if os.Getenv("APP_ENV") == "production" {
+	if os.Getenv("GIN_MODE") == "release" {
 		all_router = gin.New()
 		all_router.Use(gin.Recovery())
 	}
@@ -40,9 +42,6 @@ func main() {
 	// all_router = gin.New()
 	// all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
 	all_router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
-
-	database.ConnectPostgres()
-	database.ConnectRedis()
 
 	{
 		// just grouping, to make it more readable
