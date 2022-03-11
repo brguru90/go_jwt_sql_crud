@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "Dockerfile-alternate__update_missing_tb_action_data": "dockerfile",
+        "random": "c",
+        "istream": "c",
+        "ostream": "c",
+        "streambuf": "c"
+    }
+}
