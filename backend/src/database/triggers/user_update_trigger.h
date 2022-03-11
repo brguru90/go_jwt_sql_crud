@@ -34,30 +34,17 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 extern Datum trig_test(PG_FUNCTION_ARGS);
 
-
-
 static int trigger_fired_by_update(TriggerEvent tg_event) {
 	return (TRIGGER_FIRED_BY_UPDATE(tg_event)) != 0;
 }
 static Datum pointer_get_datum(HeapTuple t) {
 	return PointerGetDatum(t);
 }
-static char *getarg_text(TriggerData *trigdata, HeapTuple rettuple, int idx) {
+static int64 get_row_id_first_col(TriggerData *trigdata, HeapTuple rettuple, int idx) {
 	bool isnull;
-
-
 	TupleDesc tupdesc = trigdata->tg_relation->rd_att;
-	int32 att = DatumGetInt32(heap_getattr(rettuple, idx, tupdesc, &isnull));
-	DatumGetInt32(GetAttributeByName(rettuple, "id", &isnull));
-	//text *t = DatumGetTextP(heap_getattr(rettuple, idx, tupdesc, &isnull));
-	//if (isnull || !t) {
-	//return "";
-	//}
-	// return VARDATA(t);
-	return "hi";
-}
-static void elog_info(char *s) {
-	elog(INFO, "%s", s);
+	int64 row_id=DatumGetInt64(heap_getattr(rettuple, idx, tupdesc, &isnull));
+	return row_id;
 }
 
 #line 1 "cgo-generated-wrapper"

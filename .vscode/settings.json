@@ -1,9 +1,11 @@
 {
     "files.associations": {
         "Dockerfile-alternate__update_missing_tb_action_data": "dockerfile",
+        "*.html": "html",
         "random": "c",
         "istream": "c",
         "ostream": "c",
-        "streambuf": "c"
+        "streambuf": "c",
+        "postgres.h": "c"
     }
 }

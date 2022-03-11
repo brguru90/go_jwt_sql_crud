@@ -15,6 +15,7 @@ const users_email_uuid string = `CREATE UNIQUE INDEX "users_email_uuid" ON "user
 const users_uuid string = ` CREATE INDEX "users_uuid" ON "users" ("uuid");`
 
 func get_trigger_sqls() []string {
+	// chmod o+rx $HOME if permission denied
 	user_update_trigger, err := filepath.Abs("src/database/triggers/user_update_trigger.so")
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -26,16 +27,15 @@ func get_trigger_sqls() []string {
 RETURNS TRIGGER AS '%s'
 LANGUAGE C;`, user_update_trigger)
 
-var users_triggers_register_to_table =`CREATE TRIGGER user_update_trigger_on_insert
+	var users_triggers_register_to_table = `CREATE TRIGGER user_update_trigger_on_insert
 AFTER INSERT OR UPDATE
 ON users
 FOR EACH ROW
 EXECUTE PROCEDURE user_update_trigger();`
 
-// SELECT * FROM information_schema.triggers;
+	// SELECT * FROM information_schema.triggers;
 
-
-	return []string{users_triggers_map_func,users_triggers_register_to_table}
+	return []string{users_triggers_map_func, users_triggers_register_to_table}
 }
 
 func InitUserModels(db_connection *pgxpool.Pool) {

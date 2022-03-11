@@ -12,3 +12,4 @@ backend/go_server
 backend/package-lock.json
 frontend/package-lock.json
 package-lock.json
+test.o
