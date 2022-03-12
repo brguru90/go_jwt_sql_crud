@@ -8,6 +8,7 @@ import (
 )
 
 func Exec_SQL(db_connection *pgxpool.Pool, SQL string) {
+	// just executes given SQL statement
 	_, err := db_connection.Exec(context.Background(), SQL)
 	if err != nil {
 		log.WithFields(log.Fields{

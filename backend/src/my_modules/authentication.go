@@ -36,8 +36,8 @@ type AccessToken struct {
 }
 
 type AccessTokenClaims struct {
-	jwt.StandardClaims
-	AccessToken `json:"accessToken" binding:"required"`
+	jwt.StandardClaims // extending the structure
+	AccessToken        `json:"accessToken" binding:"required"`
 }
 
 func randomBytes(size int) (blk []byte, err error) {
@@ -70,6 +70,7 @@ func GenerateAccessToken(uname string, csrf_token string, data TokenPayload) (st
 	// accessTokenPayload.IssuedAtTime = time_now
 	// accessTokenPayload.Exp = time_now + JWT_TOKEN_EXPIRE
 
+	// generating token with encrypted payload
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenPayload)
 	token_string, token_err := token.SignedString([]byte(JWT_SECRET_KEY))
 
@@ -152,6 +153,7 @@ func LoginStatus(c *gin.Context) (AccessToken, string, int, bool) {
 		return AccessToken{}, "Unknown error in extracting the cookie", http.StatusInternalServerError, false
 	}
 
+	// decrypting JWT & retriving payload
 	token, err := jwt.ParseWithClaims(access_token, &token_claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(JWT_SECRET_KEY), nil
 	})
@@ -182,6 +184,7 @@ func LoginStatus(c *gin.Context) (AccessToken, string, int, bool) {
 }
 
 func ExtractTokenPayload(c *gin.Context) (AccessToken, bool) {
+	// extracting required data from payload
 	c_data, ok := c.Get("decoded_token")
 	if !ok {
 		CreateAndSendResponse(c, http.StatusOK, "error", "Not able to get user data from current session", nil)

@@ -24,6 +24,7 @@ func main() {
 	database.ConnectRedis()
 	go my_modules.InitCronJobs()
 
+	// init with default middlewares
 	var all_router *gin.Engine = gin.Default()
 
 	if os.Getenv("DISABLE_COLOR") == "true" {
@@ -33,7 +34,9 @@ func main() {
 	}
 
 	if os.Getenv("GIN_MODE") == "release" {
+		// init without any middlewares
 		all_router = gin.New()
+		// but adding this
 		all_router.Use(gin.Recovery())
 	}
 
@@ -43,11 +46,14 @@ func main() {
 	// all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
 	all_router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
 
+	// !warning, the use of middleware may applicable to all further extended routes, so grouping will fix the issue, since middleware within the groups will not applicable to above routes from where its grouped
+
 	{
 		// just grouping, to make it more readable
 		api_router := all_router.Group("/api")
-
-		all_router.Use(cors.Default())
+		if os.Getenv("GIN_MODE") != "release" {
+			all_router.Use(cors.Default())
+		}
 		api_router.Use(middlewares.FindUserAgentMiddleware()) // an example for global middleware on api_router
 		api_router.Use(middlewares.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
 			c.String(http.StatusOK, "hi")

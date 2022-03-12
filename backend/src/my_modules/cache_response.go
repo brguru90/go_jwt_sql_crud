@@ -22,7 +22,7 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_ttl_secs time.Duration) func(c *gin.Context) {
+func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_ttl_secs time.Duration, custom_cache_prefix func(*gin.Context) string) func(c *gin.Context) {
 
 	return func(c *gin.Context) {
 
@@ -34,10 +34,14 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 		route_path := c.FullPath()
 		_raw_dt, _ := c.GetRawData()
 		_params, _ := json.Marshal(c.Params)
+		_prefix := ""
+		if custom_cache_prefix != nil {
+			_prefix = custom_cache_prefix(c)
+		}
 
 		h := sha1.New()
 		h.Write([]byte(_uri + string(_params) + string(_raw_dt)))
-		cache_key := table_name + "___" + route_path + "___" + string(h.Sum(nil))
+		cache_key := table_name + "___" + _prefix + "___" + route_path + "___" + string(h.Sum(nil))
 
 		var responseCache ResponseCacheStruct
 		var cache_mis_err error

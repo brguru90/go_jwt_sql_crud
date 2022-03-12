@@ -18,6 +18,7 @@ func SignUp(c *gin.Context) {
 	// in Progress
 
 	var newUserRow my_modules.NewUserRow
+	// ShouldBindJSON will validate json body & convert it to structure object
 	if err := c.ShouldBindJSON(&newUserRow); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
 		return

@@ -7,6 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// structure member first letter should be capital indorser to export it as json
+// binding encforce required condition
+// empty interface data type allow unknown json format for which we don't have structure defined
+// empty interface converted to map object
 type UserRow struct {
 	Column_id          int64       `json:"id" binding:"required"`
 	Column_uuid        string      `json:"uuid" binding:"required"`

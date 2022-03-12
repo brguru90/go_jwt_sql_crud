@@ -43,10 +43,11 @@ func GetUserData(c *gin.Context) {
 			// for now lets assume admin as current use
 			var _offset = _limit * (_page - 1)
 			db_query = `SELECT * FROM users ORDER BY id OFFSET $2 LIMIT $1; `
+			// since its an pagination query sending request context, so query can be terminated if API request is cancelled
 			rows, err = db_connection.Query(c.Request.Context(), db_query, _limit, _offset)
 		} else {
 			db_query = `SELECT * FROM users WHERE uuid=$1`
-			rows, err = db_connection.Query(c.Request.Context(), db_query, uuid)
+			rows, err = db_connection.Query(context.Background(), db_query, uuid)
 		}
 
 		if err != nil {

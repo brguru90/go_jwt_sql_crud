@@ -24,21 +24,22 @@ func FindUserAgentMiddleware() gin.HandlerFunc {
 }
 
 func HeaderHandlerFunc(c *gin.Context) {
-	h := c.GetHeader("token")
-	if h == "1234" {
-		c.Header("User", "some user")
-	} else if h == "" {
-		c.Header("User", "no token received")
-		// will abort request to this middleware
-		// c.AbortWithStatus(http.StatusOK)
-	} else {
-		c.Header("User", "invalid token")
-	}
+	// h := c.GetHeader("token")
+	// if h == "1234" {
+	// 	c.Header("User", "some user")
+	// } else if h == "" {
+	// 	c.Header("User", "no token received")
+	// 	// will abort request to this middleware
+	// 	// c.AbortWithStatus(http.StatusOK)
+	// } else {
+	// 	c.Header("User", "invalid token")
+	// }
 }
 
 func ApiSpecificMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// log.Debugln("ApiSpecificMiddleware ===>", c.Request.URL.Path)
+		// Apeending slash to URL if not present
 		if c.FullPath() != "" && !strings.HasSuffix(c.FullPath(), "/") {
 			c.Redirect(http.StatusTemporaryRedirect, c.FullPath()+"/")
 		} else {

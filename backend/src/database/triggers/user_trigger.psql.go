@@ -23,6 +23,7 @@ static Datum pointer_get_datum(HeapTuple t) {
 static int64 get_row_id_first_col(TriggerData *trigdata, HeapTuple rettuple, int idx) {
 	bool isnull;
 	TupleDesc tupdesc = trigdata->tg_relation->rd_att;
+	// Extracting value of first column
 	int64 row_id=DatumGetInt64(heap_getattr(rettuple, idx, tupdesc, &isnull));
 	return row_id;
 }
@@ -37,6 +38,11 @@ import (
 
 //export user_update_trigger
 func user_update_trigger(fcInfo *C.FunctionCallInfoBaseData) C.Datum {
+	// !Careful, if Anything wrong in this file like syntax error or runtime error, then [database may fail to update data]
+	// !Careful, The commented C codes are executable and can be called from Go functions
+	// !Warning, IDEs may not able to autocomplete few c imports & IDEs may show error on some line
+	// !Careful, The C implementation in comment in go is very sensitive,new lines before user_update_trigger() function may throws errors
+	// * all the log statement in this source code will be writtenn to bellow postgres log file
 	// tail -f /var/log/postgresql/postgresql-14-main.log
 	fmt.Println("user_update_trigger", time.Now())
 
@@ -49,6 +55,7 @@ func user_update_trigger(fcInfo *C.FunctionCallInfoBaseData) C.Datum {
 		rettuple = (*C.HeapTupleData)(trigdata.tg_trigtuple)
 	}
 
+	// calling the C function which read first column data,as specfie [1 bellow]
 	created_or_updated_user_id := fmt.Sprintf("%v", (C.get_row_id_first_col(trigdata, rettuple, 1)))
 	os.WriteFile("/tmp/dat1", []byte(created_or_updated_user_id), 0644)
 

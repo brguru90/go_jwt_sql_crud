@@ -39,6 +39,8 @@ func canSendResponse(c *gin.Context) bool {
 
 func CreateAndSendResponse(c *gin.Context, HTTP_Status int, status string, message string, Data interface{}) {
 
+	// some time we may get runtime error when we trying to send response after API is cancelled
+	// to avoid that, checking the context is cancelled
 	if !canSendResponse(c) {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": status, "error": "aborted"})
 		return

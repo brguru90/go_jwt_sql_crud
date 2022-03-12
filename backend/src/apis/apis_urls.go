@@ -24,7 +24,7 @@ func InitApiTest(router *gin.RouterGroup) {
 
 	{
 		protected_router := router.Group("", middlewares.ValidateToken())
-		protected_router.GET("user/", my_modules.GetCachedResponse(views.GetUserData, "users", time.Second*30))
+		protected_router.GET("user/", my_modules.GetCachedResponse(views.GetUserData, "users", time.Second*30, nil))
 		protected_router.PUT("user/", views.UpdateUserData)
 		protected_router.DELETE("user/", views.Deleteuser)
 		protected_router.GET("user/active_sessions/", views.GetActiveSession)

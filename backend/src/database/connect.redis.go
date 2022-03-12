@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Redis Connection is concurrent safe, so no need to lock while using
 var REDIS_DB_CONNECTION *redis.Client
 
 func ConnectRedis() {
@@ -23,6 +24,7 @@ func ConnectRedis() {
 	})
 
 	_ping := REDIS_DB_CONNECTION.Ping(ctx)
+	// checking that is it possible to write data to database
 	err := REDIS_DB_CONNECTION.Set(ctx, "test_connection", "value", 5*time.Minute).Err()
 	if err != nil {
 		log.WithFields(log.Fields{

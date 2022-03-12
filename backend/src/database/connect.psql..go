@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Postgres Connection is concurrent safe, so no need to lock while using
 var POSTGRES_DB_CONNECTION *pgxpool.Pool
 
 func ConnectPostgres() {
@@ -25,6 +26,7 @@ func ConnectPostgres() {
 	var DATABASE string = os.Getenv("DATABASE")
 	var DB_PORT string = os.Getenv("DB_PORT")
 
+	// trying to connect database assuming specified database is already present
 	var DB_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DATABASE)
 	dbconfig, err := pgxpool.ParseConfig(DB_URL)
 
@@ -60,6 +62,7 @@ func ConnectPostgres() {
 		}).Warningln("Database doesn't exists")
 
 		{
+			// Since specified DB not present, connecting postgres DB to create a new Database
 			var POSTGRES_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%s/postgres", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 			log.Infoln(fmt.Sprintf("Connecting to %s", POSTGRES_URL))
 			_db_connection, err := pgx.Connect(context.Background(), POSTGRES_URL)
@@ -71,6 +74,7 @@ func ConnectPostgres() {
 				os.Exit(1)
 			}
 
+			// Creating specified DB
 			log.Infoln(fmt.Sprintf("Creating %s Database ", DATABASE))
 			var create_db string = fmt.Sprintf("CREATE DATABASE %s;", DATABASE)
 			_rows, err2 := _db_connection.Query(context.Background(), create_db)
@@ -86,6 +90,7 @@ func ConnectPostgres() {
 		}
 
 		{
+			// reconnecting to specified DB, after the DB is created
 			log.Infoln(fmt.Sprintf("Reconnecting to %s", DB_URL))
 			dbpool, err = pgxpool.Connect(context.Background(), DB_URL)
 			if err != nil {
@@ -98,6 +103,7 @@ func ConnectPostgres() {
 		}
 	}
 
+	// Creating the Table schemas
 	InitUserModels(dbpool)
 	InitActiveSessionsModels(dbpool)
 
