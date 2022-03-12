@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"learn_go/src/apis/api_modules"
 	"learn_go/src/apis/views"
 	"learn_go/src/middlewares"
 	"learn_go/src/my_modules"
@@ -31,7 +32,7 @@ func InitApiTest(router *gin.RouterGroup) {
 
 	{
 		protected_router := router.Group("", middlewares.ValidateToken())
-		protected_router.GET("user/", my_modules.GetCachedResponse(views.GetUserData, "users", CACHE_TTL_DURATION, nil))
+		protected_router.GET("user/", my_modules.GetCachedResponse(views.GetUserData, "users", CACHE_TTL_DURATION, api_modules.ForUserPagination))
 		protected_router.PUT("user/", views.UpdateUserData)
 		protected_router.DELETE("user/", views.Deleteuser)
 		protected_router.GET("user/active_sessions/", views.GetActiveSession)

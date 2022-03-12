@@ -30,10 +30,13 @@ static int64 get_row_id_first_col(TriggerData *trigdata, HeapTuple rettuple, int
 */
 import "C"
 import (
+	"context"
 	"fmt"
+	"learn_go/src/database"
 	"os"
-	"time"
 	"unsafe"
+
+	log "github.com/sirupsen/logrus"
 )
 
 //export user_update_trigger
@@ -44,7 +47,6 @@ func user_update_trigger(fcInfo *C.FunctionCallInfoBaseData) C.Datum {
 	// !Careful, The C implementation in comment in go is very sensitive,new lines before user_update_trigger() function may throws errors
 	// * all the log statement in this source code will be writtenn to bellow postgres log file
 	// tail -f /var/log/postgresql/postgresql-14-main.log
-	fmt.Println("user_update_trigger", time.Now())
 
 	trigdata := (*C.TriggerData)(unsafe.Pointer(fcInfo.context))
 
@@ -59,9 +61,13 @@ func user_update_trigger(fcInfo *C.FunctionCallInfoBaseData) C.Datum {
 	created_or_updated_user_id := fmt.Sprintf("%v", (C.get_row_id_first_col(trigdata, rettuple, 1)))
 	os.WriteFile("/tmp/dat1", []byte(created_or_updated_user_id), 0644)
 
-	// log.WithFields(log.Fields{
-	// 	"created_or_updated_user_id": created_or_updated_user_id,
-	// }).Error(">>>>>>>>>>>>>>>> got data from trigger")
+	log.WithFields(log.Fields{
+		"created_or_updated_user_id": created_or_updated_user_id,
+	}).Error(">>>>>>>>>>>>>>>> got data from trigger")
+
+	redis_db_connection := database.REDIS_DB_CONNECTION
+
+	redis_db_connection.Del(context.Background(), "users_table")
 
 	return C.pointer_get_datum(rettuple)
 }

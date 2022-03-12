@@ -43,6 +43,7 @@ static Datum pointer_get_datum(HeapTuple t) {
 static int64 get_row_id_first_col(TriggerData *trigdata, HeapTuple rettuple, int idx) {
 	bool isnull;
 	TupleDesc tupdesc = trigdata->tg_relation->rd_att;
+	// Extracting value of first column
 	int64 row_id=DatumGetInt64(heap_getattr(rettuple, idx, tupdesc, &isnull));
 	return row_id;
 }

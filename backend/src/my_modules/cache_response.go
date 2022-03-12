@@ -36,12 +36,12 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 		_params, _ := json.Marshal(c.Params)
 		_prefix := ""
 		if custom_cache_prefix != nil {
-			_prefix = custom_cache_prefix(c)
+			_prefix = "___" + custom_cache_prefix(c)
 		}
 
 		h := sha1.New()
 		h.Write([]byte(_uri + string(_params) + string(_raw_dt)))
-		cache_key := table_name + "___" + _prefix + "___" + route_path + "___" + string(h.Sum(nil))
+		cache_key := table_name + _prefix + "___" + route_path + "___" + string(h.Sum(nil))
 
 		var responseCache ResponseCacheStruct
 		var cache_mis_err error
@@ -121,6 +121,13 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 					"_raw_dt": _raw_dt,
 				}).Error("while caching response")
 			}
+
+			REDIS_CACHE.Set(&cache.Item{
+				Ctx:   c.Request.Context(),
+				Key:   "users_table",
+				Value: "cached",
+				TTL:   cache_ttl_secs,
+			})
 		}
 	}
 
