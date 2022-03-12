@@ -49,16 +49,18 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 			// getting data from cache
 			cache_mis_err = REDIS_CACHE.Get(c.Request.Context(), cache_key, &responseCache)
 			if cache_mis_err == nil {
+				_now := time.Now()
+
 				log.Debugln("cache hit --> " + route_path)
 
 				c.Writer.Header().Set("Content-Type", responseCache.ContentType)
-				c.Writer.Header().Set("From-Cache", "true")
+				c.Writer.Header().Set("From-cache", "true")
+				c.Writer.Header().Set("From-cache-TTL-left-Secs", fmt.Sprintf("%v", (cache_ttl_secs-_now.Sub(responseCache.LastModified)).Seconds()))
 				c.String(responseCache.HTTPStatusCode, string(responseCache.ResponseData))
 
 				{
 					// renewing cache expiry if 25% of Time To Live(TTL) value is elapsed
 					cache_ttl_sec_3quarter := time.Duration(one_sec * int(math.Floor(cache_ttl_secs.Seconds()*0.75)))
-					_now := time.Now()
 					if _now.Sub(responseCache.LastModified) >= cache_ttl_sec_3quarter {
 						log.Debugln("cache Renewing --> " + route_path)
 						responseCache.LastModified = _now
