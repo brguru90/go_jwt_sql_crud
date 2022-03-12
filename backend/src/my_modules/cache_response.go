@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"learn_go/src/database"
 	"math"
+	"os"
 	"strings"
 	"time"
 
@@ -17,6 +18,8 @@ import (
 
 const one_sec = 1000000000
 
+var cache_enabled bool = os.Getenv("ENABLE_REDIS_CACHE") == "true"
+
 func (w bodyLogWriter) Write(b []byte) (int, error) {
 	w.body.Write(b)
 	return w.ResponseWriter.Write(b)
@@ -25,6 +28,11 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_ttl_secs time.Duration, custom_cache_prefix func(*gin.Context) string) func(c *gin.Context) {
 
 	return func(c *gin.Context) {
+
+		if !cache_enabled {
+			view_func(c)
+			return
+		}
 
 		REDIS_CACHE := cache.New(&cache.Options{
 			Redis:      database.REDIS_DB_CONNECTION,
@@ -44,17 +52,18 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 		cache_key := table_name + _prefix + "___" + route_path + "___" + string(h.Sum(nil))
 
 		var responseCache ResponseCacheStruct
-		var cache_mis_err error
-		{
+
+		var _temp_val string = "true"
+		if cache_should_mis_err := REDIS_CACHE.Get(c.Request.Context(), "users_update_in_progress", &_temp_val); cache_should_mis_err != nil {
 			// getting data from cache
-			cache_mis_err = REDIS_CACHE.Get(c.Request.Context(), cache_key, &responseCache)
+			cache_mis_err := REDIS_CACHE.Get(c.Request.Context(), cache_key, &responseCache)
 			if cache_mis_err == nil {
 				_now := time.Now()
 
 				log.Debugln("cache hit --> " + route_path)
 
 				c.Writer.Header().Set("Content-Type", responseCache.ContentType)
-				c.Writer.Header().Set("From-cache", "true")
+				c.Writer.Header().Set("From-cache", _temp_val)
 				c.Writer.Header().Set("From-cache-TTL-left-Secs", fmt.Sprintf("%v", (cache_ttl_secs-_now.Sub(responseCache.LastModified)).Seconds()))
 				c.String(responseCache.HTTPStatusCode, string(responseCache.ResponseData))
 
@@ -121,13 +130,6 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 					"_raw_dt": _raw_dt,
 				}).Error("while caching response")
 			}
-
-			REDIS_CACHE.Set(&cache.Item{
-				Ctx:   c.Request.Context(),
-				Key:   "users_table",
-				Value: "cached",
-				TTL:   cache_ttl_secs,
-			})
 		}
 	}
 

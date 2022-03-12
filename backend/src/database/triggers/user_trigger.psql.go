@@ -30,9 +30,8 @@ static int64 get_row_id_first_col(TriggerData *trigdata, HeapTuple rettuple, int
 */
 import "C"
 import (
-	"context"
 	"fmt"
-	"learn_go/src/database"
+	"net/http"
 	"os"
 	"unsafe"
 
@@ -63,11 +62,30 @@ func user_update_trigger(fcInfo *C.FunctionCallInfoBaseData) C.Datum {
 
 	log.WithFields(log.Fields{
 		"created_or_updated_user_id": created_or_updated_user_id,
-	}).Error(">>>>>>>>>>>>>>>> got data from trigger")
+	}).Errorln(">>>>>>>>>>>>>>>> got data from trigger")
 
-	redis_db_connection := database.REDIS_DB_CONNECTION
-
-	redis_db_connection.Del(context.Background(), "users_table")
+	go RediscacheInvalidation(created_or_updated_user_id)
 
 	return C.pointer_get_datum(rettuple)
+}
+
+func RediscacheInvalidation(user_id string) {
+	req, err := http.NewRequest("GET", "http://localhost:3000/api/del_user_cache/"+user_id, nil)
+	req.Header.Set("secret", "1234")
+	if err == nil {
+		client := &http.Client{}
+		_, err := client.Do(req)
+		if err == nil {
+			log.Infoln("successfully sent request to del_user_cache")
+		} else {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Error("failed to send request to del_user_cache")
+		}
+	} else {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to create request to del_user_cache")
+	}
+
 }

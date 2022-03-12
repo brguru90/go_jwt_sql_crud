@@ -17,7 +17,7 @@ import (
 // Postgres Connection is concurrent safe, so no need to lock while using
 var POSTGRES_DB_CONNECTION *pgxpool.Pool
 
-func ConnectPostgres() {
+func ConnectPostgres() *pgxpool.Pool {
 	// https://github.com/jackc/pgx
 
 	var DB_USER string = os.Getenv("DB_USER")
@@ -108,4 +108,6 @@ func ConnectPostgres() {
 	InitActiveSessionsModels(dbpool)
 
 	POSTGRES_DB_CONNECTION = dbpool
+
+	return dbpool
 }

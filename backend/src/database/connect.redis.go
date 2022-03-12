@@ -17,18 +17,18 @@ func ConnectRedis() {
 
 	log.Info("Connecting to Redis....")
 	var ctx = context.Background()
-	REDIS_DB_CONNECTION = redis.NewClient(&redis.Options{
+	redis_conn := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
-	_ping := REDIS_DB_CONNECTION.Ping(ctx)
+	_ping := redis_conn.Ping(ctx)
 	// checking that is it possible to write data to database
-	err := REDIS_DB_CONNECTION.Set(ctx, "test_connection", "value", 5*time.Minute).Err()
+	err := redis_conn.Set(ctx, "test_connection", "value", 5*time.Minute).Err()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"REDIS_DB_CONNECTION": REDIS_DB_CONNECTION,
+			"REDIS_DB_CONNECTION": redis_conn,
 			"_ping":               _ping,
 			"Error":               err,
 		}).Panic("Unable to connect redis")
@@ -36,8 +36,9 @@ func ConnectRedis() {
 	}
 
 	log.WithFields(log.Fields{
-		"REDIS_DB_CONNECTION": REDIS_DB_CONNECTION,
+		"REDIS_DB_CONNECTION": redis_conn,
 		"Ping":                _ping,
 	}).Info("Redis database connected successfully")
 
+	REDIS_DB_CONNECTION = redis_conn
 }

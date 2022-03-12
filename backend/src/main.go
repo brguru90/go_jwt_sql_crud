@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"learn_go/src/apis"
+	"learn_go/src/apis_set_1"
 	"learn_go/src/database"
 	"learn_go/src/middlewares"
 	"learn_go/src/my_modules"
@@ -58,7 +58,7 @@ func main() {
 		api_router.Use(middlewares.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
 			c.String(http.StatusOK, "hi")
 		})
-		apis.InitApiTest(api_router) // more apis imported
+		apis_set_1.InitApiTest(api_router) // more apis imported
 	}
 
 	if os.Getenv("SERVER_PORT") != "" {
