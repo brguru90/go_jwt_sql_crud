@@ -1,5 +1,12 @@
 package my_modules
 
+import (
+	"bytes"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
 type UserRow struct {
 	Column_id          int64       `json:"id" binding:"required"`
 	Column_uuid        string      `json:"uuid" binding:"required"`
@@ -31,4 +38,16 @@ type ActiveSessionsRow struct {
 	Column_status    string      `json:"status"`
 	Column_createdAt interface{} `json:"createdAt"`
 	Column_updatedAt interface{} `json:"updatedAt"`
+}
+
+type ResponseCacheStruct struct {
+	ResponseData   string    `json:"response_data" binding:"required"`
+	ContentType    string    `json:"content_type" binding:"required"`
+	HTTPStatusCode int       `json:"http_status_code" binding:"required"`
+	LastModified   time.Time `json:"last_modified" binding:"required"`
+}
+
+type bodyLogWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
 }

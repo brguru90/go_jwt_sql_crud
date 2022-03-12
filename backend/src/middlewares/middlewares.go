@@ -2,21 +2,21 @@ package middlewares
 
 import (
 	"learn_go/src/my_modules"
-	"os"
+	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func FindUserAgentMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if os.Getenv("APP_ENV") != "production" {
-			log.WithFields(log.Fields{
-				"path":           c.FullPath(),
-				"User Agent":     c.GetHeader("User-Agent"),
-				"Request Method": c.Request.Method,
-			}).Infoln("API Request ==>")
-		}
+		// if os.Getenv("APP_ENV") != "production" {
+		// 	log.WithFields(log.Fields{
+		// 		"path":           c.FullPath(),
+		// 		"User Agent":     c.GetHeader("User-Agent"),
+		// 		"Request Method": c.Request.Method,
+		// 	}).Infoln("API Request ==>")
+		// }
 		// Before calling handler
 		c.Next()
 		// After calling handler
@@ -39,9 +39,11 @@ func HeaderHandlerFunc(c *gin.Context) {
 func ApiSpecificMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// log.Debugln("ApiSpecificMiddleware ===>", c.Request.URL.Path)
-		// Before calling handler
-		c.Next()
-		// After calling handler
+		if c.FullPath() != "" && !strings.HasSuffix(c.FullPath(), "/") {
+			c.Redirect(http.StatusTemporaryRedirect, c.FullPath()+"/")
+		} else {
+			c.Next()
+		}
 	}
 }
 

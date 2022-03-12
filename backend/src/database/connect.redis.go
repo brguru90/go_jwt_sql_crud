@@ -12,6 +12,7 @@ var REDIS_DB_CONNECTION *redis.Client
 
 func ConnectRedis() {
 	// https://github.com/go-redis/redis
+	// https://github.com/go-redis/redis/issues/166
 
 	log.Info("Connecting to Redis....")
 	var ctx = context.Background()
@@ -36,4 +37,5 @@ func ConnectRedis() {
 		"REDIS_DB_CONNECTION": REDIS_DB_CONNECTION,
 		"Ping":                _ping,
 	}).Info("Redis database connected successfully")
+
 }
