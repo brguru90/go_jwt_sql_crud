@@ -22,6 +22,7 @@ func main() {
 	my_modules.InitLogger()
 	database.ConnectPostgres()
 	database.ConnectRedis()
+	database.InitRedisPool()
 	go my_modules.InitCronJobs()
 
 	// init with default middlewares

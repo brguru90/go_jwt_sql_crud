@@ -16,8 +16,10 @@
     "resolve_dependencies": "go mod tidy",
     "install": "npm-run-all  --serial --continue-on-error go_init resolve_dependencies",
     "build_shared":"go build -o src/database/triggers/user_update_trigger.so -buildmode=c-shared src/database/triggers/*.go",
+    "build_shared_windows":"go build -o src/database/triggers/user_update_trigger.dll -buildmode=c-shared src/database/triggers/*.go",
     "build_go": "go build -v -o go_server src/main.go",
     "build":"npm-run-all  --serial build_shared build_go",
+    "build_win":"GOOS='windows' npm-run-all  --serial build_shared_windows build_go",
     "start_prod": "npm-run ./go_server",
     "test":"npm-run-all race"
   }

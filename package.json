@@ -17,6 +17,7 @@
     "build": "concurrently 'yarn build_frontend' 'yarn build_backend'",
     "build_frontend": "env-cmd -f .env_prod yarn --cwd ./frontend/ build",
     "build_backend": "env-cmd -f .env_prod yarn --cwd ./backend/ build",
+    "build_backend_win": " env-cmd -f .env_prod yarn --cwd ./backend/ build_win",
     "@3": "====================================================================================",
     "start_prod": "env-cmd -f .env_prod  yarn --cwd ./backend/ start_prod",
     "@4": "====================================================================================",
