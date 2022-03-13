@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/cache/v8"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,10 +33,6 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 			return
 		}
 
-		REDIS_CACHE := cache.New(&cache.Options{
-			Redis:      database.REDIS_DB_CONNECTION,
-			LocalCache: cache.NewTinyLFU(1000, time.Minute),
-		})
 		_uri := c.Request.RequestURI
 		route_path := c.FullPath()
 		_raw_dt, _ := c.GetRawData()
@@ -53,10 +48,9 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 
 		var responseCache ResponseCacheStruct
 
-		var _temp_val string = "true"
-		if cache_should_mis_err := REDIS_CACHE.Get(c.Request.Context(), "users_update_in_progress", &_temp_val); cache_should_mis_err != nil {
+		if _temp_val, cache_should_mis_err := database.RedisPoolGet("users_update_in_progress"); cache_should_mis_err != nil {
 			// getting data from cache
-			cache_mis_err := REDIS_CACHE.Get(c.Request.Context(), cache_key, &responseCache)
+			cache_mis_err := database.RedisPoolGetJSON(cache_key, &responseCache)
 			if cache_mis_err == nil {
 				_now := time.Now()
 
@@ -73,12 +67,7 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 					if _now.Sub(responseCache.LastModified) >= cache_ttl_sec_3quarter {
 						log.Debugln("cache Renewing --> " + route_path)
 						responseCache.LastModified = _now
-						err := REDIS_CACHE.Set(&cache.Item{
-							Ctx:   c.Request.Context(),
-							Key:   cache_key,
-							Value: responseCache,
-							TTL:   cache_ttl_secs,
-						})
+						err := database.RedisPoolSetJSON(cache_key, responseCache, cache_ttl_secs)
 						if err != nil {
 							log.WithFields(log.Fields{
 								"err":     err,
@@ -116,12 +105,7 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 				HTTPStatusCode: c.Writer.Status(),
 				LastModified:   time.Now(),
 			}
-			err := REDIS_CACHE.Set(&cache.Item{
-				Ctx:   c.Request.Context(),
-				Key:   cache_key,
-				Value: responseCache,
-				TTL:   cache_ttl_secs,
-			})
+			err := database.RedisPoolSetJSON(cache_key, responseCache, cache_ttl_secs)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"err":     err,

@@ -16,12 +16,14 @@ var REDIS_DB_CONNECTION *redis.Client
 var REDIS_DB_CONNECTION_POOL *redispool.Pool
 
 func ConnectRedis() {
+	// !warning, this repo is not clear how it will handle connection pool, & when i ran benchmark i got very poor performance
+	// ! So this library here its not used for implementing APIs caching
 	// https://github.com/go-redis/redis
 	// https://github.com/go-redis/redis/issues/166
 
 	log.Info("Connecting to Redis....")
 	var ctx = context.Background()
-	REDIS_DB_CONNECTION := redis.NewClient(&redis.Options{
+	REDIS_DB_CONNECTION = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
@@ -51,6 +53,9 @@ type Person struct {
 }
 
 func InitRedisPool() {
+	// !Important, Using this library i got very good performance while running benchmarks,
+	// ! So this library will mainly used for API caching
+	// https://github.com/gomodule/redigo/
 	REDIS_DB_CONNECTION_POOL = &redispool.Pool{
 		MaxIdle:   80,
 		MaxActive: 12000,
