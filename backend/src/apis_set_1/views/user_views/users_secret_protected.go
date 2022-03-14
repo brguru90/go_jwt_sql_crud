@@ -81,4 +81,21 @@ func InvalidateUsercache(c *gin.Context) {
 	database.REDIS_DB_CONNECTION.Del(ctx, "users_update_in_progress")
 	log.Infoln("deleted users_update_in_progress")
 
+	var count int
+	rows2:=database.POSTGRES_DB_CONNECTION.QueryRow(ctx,"SELECT COUNT(*) FROM users")
+	err2:=rows2.Scan(&count)
+	if err2==nil{
+		log.Infoln(fmt.Sprintf("count=%d",count))
+		err:=database.REDIS_DB_CONNECTION.Set(ctx,"users_count",count,time.Second*0).Err()
+		if err!=nil{
+			log.WithFields(log.Fields{
+				"errors":err,
+			}).Errorln("Error in setting user count to redis")
+		}
+	} else {
+		log.WithFields(log.Fields{
+			"errors":err2,
+		}).Errorln("Error in getting user count")
+	}
+
 }

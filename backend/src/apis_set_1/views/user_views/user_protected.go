@@ -82,9 +82,12 @@ func GetUserData(c *gin.Context) {
 			}
 
 			if _page > 0 {
+				total_users,_:=database.REDIS_DB_CONNECTION.Get(context.Background(),"users_count").Result()
+				total_users_int,_:=strconv.ParseInt(total_users,10,64)
 				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", map[string]interface{}{
 					"users":    rowSlice,
 					"cur_page": _page,
+					"total_users":total_users_int,
 				})
 				return
 			} else {
