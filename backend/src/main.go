@@ -66,15 +66,17 @@ func main() {
 			c.String(http.StatusOK, "hi")
 		})
 		apis_set_1.InitApiTest(api_router) // more apis imported
+
+		api_router.Use(func (c *gin.Context)  {
+			if c.Request.RequestURI=="/api/swagger" || c.Request.RequestURI=="/api/swagger/"{
+				c.Redirect(http.StatusTemporaryRedirect, c.Request.RequestURI+"/index.html")
+			} else{
+				c.Next()
+			}		
+		}).GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
-	all_router.Use(func (c *gin.Context)  {
-		if c.Request.RequestURI=="/swagger" || c.Request.RequestURI=="/swagger/"{
-			c.Redirect(http.StatusTemporaryRedirect, c.Request.RequestURI+"/index.html")
-		} else{
-			c.Next()
-		}		
-	}).GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	
 
 	if os.Getenv("SERVER_PORT") != "" {
 		SERVER_PORT = os.Getenv("SERVER_PORT")
