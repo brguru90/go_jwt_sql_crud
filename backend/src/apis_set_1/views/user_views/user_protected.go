@@ -15,6 +15,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// @BasePath /api
+// @Summary url to view user data
+// @Schemes
+// @Description allow people to view their user profile data
+// @Tags View user data
+// @Accept json
+// @Produce json
+// @Param page query string false "page"
+// @Param limit query string false "limit"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/ [get]
 func GetUserData(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)
@@ -82,9 +95,12 @@ func GetUserData(c *gin.Context) {
 			}
 
 			if _page > 0 {
+				total_users,_:=database.REDIS_DB_CONNECTION.Get(context.Background(),"users_count").Result()
+				total_users_int,_:=strconv.ParseInt(total_users,10,64)
 				my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Record found", map[string]interface{}{
 					"users":    rowSlice,
 					"cur_page": _page,
+					"total_users":total_users_int,
 				})
 				return
 			} else {
@@ -103,6 +119,19 @@ type NewUserDataFormat struct {
 	NewUserData my_modules.NewUserRow `json:"newUserData" binding:"required"`
 }
 
+// @BasePath /api
+// @Summary url to update user data
+// @Schemes
+// @Description allow people to update their user profile data
+// @Tags Update user data
+// @Accept json
+// @Produce json
+// @Param new_user body my_modules.NewUserRow true "Add user"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/ [put]
 func UpdateUserData(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)
@@ -110,15 +139,15 @@ func UpdateUserData(c *gin.Context) {
 		return
 	}
 
-	var newUserData NewUserDataFormat
+	var updateWithData my_modules.NewUserRow
 
-	if err := c.ShouldBindJSON(&newUserData); err != nil {
+	if err := c.ShouldBindJSON(&updateWithData); err != nil {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
 		return
 	}
-	var updateWithData my_modules.NewUserRow = newUserData.NewUserData
 
 	_time := time.Now()
+	// overide any uuid with user uuid
 	updateWithData.Column_uuid = payload.Data.UUID
 
 	const sql_stmt string = `UPDATE users SET email=$2,name=$3,description=$4,"updatedAt"=$5 WHERE uuid=$1`
@@ -141,6 +170,18 @@ func UpdateUserData(c *gin.Context) {
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Updated successfully", response_data)
 }
 
+// @BasePath /api
+// @Summary get active user login session
+// @Schemes
+// @Description return the active user session/token across all browser
+// @Tags Get Active sessions
+// @Accept json
+// @Produce json
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/active_sessions/ [get]
 func GetActiveSession(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)
@@ -181,6 +222,18 @@ func GetActiveSession(c *gin.Context) {
 	}
 }
 
+// @BasePath /api
+// @Summary url to delete user account
+// @Schemes
+// @Description allow people to delete their account
+// @Tags Delete user account
+// @Accept json
+// @Produce json
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/ [delete]
 func Deleteuser(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)
@@ -220,11 +273,24 @@ func Deleteuser(c *gin.Context) {
 
 }
 
+// @BasePath /api
+// @Summary allow user to logout
+// @Schemes
+// @Description API allow user to logout, which delete the cookie which stores token
+// @Tags Logout
+// @Accept json
+// @Produce json
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/logout/ [get]
 func Logout(c *gin.Context) {
 	my_modules.DeleteCookie(c, "access_token")
 	my_modules.DeleteCookie(c, "user_data")
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Logged out", nil)
 }
+
 
 func updateActiveSession(activeSessionsRow my_modules.ActiveSessionsRow, status string) (int64, error) {
 	db_connection := database.POSTGRES_DB_CONNECTION
@@ -246,6 +312,20 @@ func updateActiveSession(activeSessionsRow my_modules.ActiveSessionsRow, status 
 	return rows_updated, nil
 }
 
+
+// @BasePath /api
+// @Summary block specified session
+// @Schemes
+// @Description Adds the token of user to block list based on provided token id
+// @Tags Block sessions
+// @Accept json
+// @Produce json
+// @Param block_active_session body my_modules.ActiveSessionsRow true "block token"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/block_token/ [post]
 func BlockSession(c *gin.Context) {
 	redis_db_connection := database.REDIS_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)
@@ -258,6 +338,8 @@ func BlockSession(c *gin.Context) {
 		my_modules.CreateAndSendResponse(c, http.StatusBadRequest, "error", "Invalid input data format", nil)
 		return
 	}
+	
+	// overide any existing uuid with uuid of current user 
 	activeSessionsRow.Column_user_uuid = payload.Data.UUID
 
 	rows_updated, err := updateActiveSession(activeSessionsRow, "blocked")

@@ -30,7 +30,7 @@ LANGUAGE C;`, user_update_trigger)
 
 	// Creating the trigger & mapping function to user table
 	var users_triggers_register_to_table = `CREATE TRIGGER user_update_trigger_on_insert
-AFTER INSERT OR UPDATE
+AFTER INSERT OR UPDATE OR DELETE
 ON users
 FOR EACH ROW
 EXECUTE PROCEDURE user_update_trigger();`

@@ -13,6 +13,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	docs "learn_go/docs"
+   swaggerfiles "github.com/swaggo/files"
+   ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var SERVER_PORT string = "8000"
@@ -47,20 +50,31 @@ func main() {
 	// all_router.Use(static.Serve("/", static.LocalFile("./src/static", true)))
 	all_router.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
 
+
+	if os.Getenv("GIN_MODE") != "release" {
+		all_router.Use(cors.Default())
+	}
+	docs.SwaggerInfo.BasePath = "/api"
+
 	// !warning, the use of middleware may applicable to all further extended routes, so grouping will fix the issue, since middleware within the groups will not applicable to above routes from where its grouped
 
 	{
-		// just grouping, to make it more readable
+		// just grouping, to make it more readable, to make middleware specific to groups
 		api_router := all_router.Group("/api")
-		if os.Getenv("GIN_MODE") != "release" {
-			all_router.Use(cors.Default())
-		}
 		api_router.Use(middlewares.FindUserAgentMiddleware()) // an example for global middleware on api_router
 		api_router.Use(middlewares.HeaderHandlerFunc).GET("/test", func(c *gin.Context) {
 			c.String(http.StatusOK, "hi")
 		})
 		apis_set_1.InitApiTest(api_router) // more apis imported
 	}
+
+	all_router.Use(func (c *gin.Context)  {
+		if c.Request.RequestURI=="/swagger" || c.Request.RequestURI=="/swagger/"{
+			c.Redirect(http.StatusTemporaryRedirect, c.Request.RequestURI+"/index.html")
+		} else{
+			c.Next()
+		}		
+	}).GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	if os.Getenv("SERVER_PORT") != "" {
 		SERVER_PORT = os.Getenv("SERVER_PORT")

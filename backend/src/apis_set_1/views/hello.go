@@ -20,6 +20,19 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+
+// @BasePath /api
+// @Summary Test API
+// @Schemes
+// @Description just to test,and work space to play with request
+// @Tags Hello
+// @Accept json
+// @Produce plain
+// @Param page path int false "page"
+// @Param limit path int false "limit"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /hello/{page}/{limit} [get]
 func Hello_api(c *gin.Context) {
 	// jsonBody := string(bodyAsByteArray)
 	// log.Infoln("Request body: \n", jsonBody)

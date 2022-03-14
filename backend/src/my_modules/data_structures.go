@@ -11,6 +11,12 @@ import (
 // binding encforce required condition
 // empty interface data type allow unknown json format for which we don't have structure defined
 // empty interface converted to map object
+
+type ResponseFormat struct{
+	Status string `json:"status" binding:"required"`
+	Msg string `json:"msg" binding:"required"`
+	Data interface{}  `json:"data" binding:"required"`
+}
 type UserRow struct {
 	Column_id          int64       `json:"id" binding:"required"`
 	Column_uuid        string      `json:"uuid" binding:"required"`

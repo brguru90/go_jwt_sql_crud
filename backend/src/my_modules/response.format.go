@@ -56,10 +56,16 @@ func CreateAndSendResponse(c *gin.Context, HTTP_Status int, status string, messa
 		return
 	}
 
-	responseBody := make(map[string]interface{})
-	responseBody["data"] = Data
-	responseBody["status"] = status
-	responseBody["msg"] = message
+	// responseBody := make(map[string]interface{})
+	// responseBody["data"] = Data
+	// responseBody["status"] = status
+	// responseBody["msg"] = message
+
+	responseBody:=ResponseFormat{
+		Status: status,
+		Msg: message,
+		Data: Data,
+	}
 
 	result, _ := json.MarshalIndent(responseBody, "", "  ")
 

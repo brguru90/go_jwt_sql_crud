@@ -14,6 +14,7 @@ import (
 
 const api_secret = "1234"
 
+
 func deleteUsercache(uuid string, ctx context.Context) {
 	_users_keys, err := database.REDIS_DB_CONNECTION.Keys(ctx, "users___uuid="+uuid+"___/api/user/*").Result()
 	if err == nil {
@@ -26,6 +27,20 @@ func deleteUsercache(uuid string, ctx context.Context) {
 	}
 }
 
+// @BasePath /api
+// @Summary InvalidateUsercache
+// @Schemes
+// @Description will be used in postgres trigger to delete redis cache
+// @Tags Delete user cache
+// @Accept json
+// @Produce json
+// @Param id path int true "user id"
+// @Param secret header string true "trigger secret"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /del_user_cache/{id} [get]
 func InvalidateUsercache(c *gin.Context) {
 	if c.GetHeader("secret") != api_secret {
 		my_modules.CreateAndSendResponse(c, http.StatusForbidden, "error", "Invalid secret", nil)
@@ -80,5 +95,22 @@ func InvalidateUsercache(c *gin.Context) {
 
 	database.REDIS_DB_CONNECTION.Del(ctx, "users_update_in_progress")
 	log.Infoln("deleted users_update_in_progress")
+
+	var count int
+	rows2:=database.POSTGRES_DB_CONNECTION.QueryRow(ctx,"SELECT COUNT(*) FROM users")
+	err2:=rows2.Scan(&count)
+	if err2==nil{
+		log.Infoln(fmt.Sprintf("count=%d",count))
+		err:=database.REDIS_DB_CONNECTION.Set(ctx,"users_count",count,time.Second*0).Err()
+		if err!=nil{
+			log.WithFields(log.Fields{
+				"errors":err,
+			}).Errorln("Error in setting user count to redis")
+		}
+	} else {
+		log.WithFields(log.Fields{
+			"errors":err2,
+		}).Errorln("Error in getting user count")
+	}
 
 }
