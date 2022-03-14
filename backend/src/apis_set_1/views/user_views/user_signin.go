@@ -132,6 +132,19 @@ func Login(c *gin.Context) {
 	my_modules.CreateAndSendResponse(c, http.StatusOK, "success", "Authorization success", newUserRow)
 }
 
+
+// @BasePath /api
+// @Summary 
+// @Schemes
+// @Description api used to validate user login session 
+// @Tags Login status
+// @Accept json
+// @Produce json
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /login_status [get]
 func LoginStatus(c *gin.Context) {
 	decoded_token, err, http_status, ok := my_modules.LoginStatus(c)
 	if err != "" {

@@ -108,6 +108,32 @@ paths:
       summary: url to login
       tags:
       - Login
+  /login_status:
+    get:
+      consumes:
+      - application/json
+      description: api used to validate user login session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      tags:
+      - Login status
   /sign_up:
     post:
       consumes:
