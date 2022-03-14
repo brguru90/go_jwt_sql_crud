@@ -1,0 +1,177 @@
+definitions:
+  my_modules.NewUserRow:
+    properties:
+      createdAt: {}
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt: {}
+      uuid:
+        type: string
+    required:
+    - description
+    - email
+    - name
+    type: object
+  my_modules.ResponseFormat:
+    properties:
+      data: {}
+      msg:
+        type: string
+      status:
+        type: string
+    required:
+    - data
+    - msg
+    - status
+    type: object
+  user_views.UserEmailID:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+info:
+  contact: {}
+paths:
+  /del_user_cache/{id}:
+    get:
+      consumes:
+      - application/json
+      description: will be used in postgres trigger to delete redis cache
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: trigger secret
+        in: header
+        name: secret
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: InvalidateUsercache
+      tags:
+      - Delete user cache
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: allow people to login into their account
+      parameters:
+      - description: Add user
+        in: body
+        name: new_user
+        required: true
+        schema:
+          $ref: '#/definitions/user_views.UserEmailID'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: url to login
+      tags:
+      - Login
+  /sign_up:
+    post:
+      consumes:
+      - application/json
+      description: allow people to create new to user account
+      parameters:
+      - description: Add user
+        in: body
+        name: new_user
+        required: true
+        schema:
+          $ref: '#/definitions/my_modules.NewUserRow'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: url to signup
+      tags:
+      - SignUp
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: allow people to their user profile data
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: url to view user data
+      tags:
+      - View user data
+swagger: "2.0"

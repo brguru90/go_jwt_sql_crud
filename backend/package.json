@@ -10,7 +10,8 @@
     "npm-run-all": "^4.1.5"
   },
   "scripts": {
-    "start": "nodemon --exec go run src/main.go --signal SIGTERM",
+    "dev_server":"nodemon --exec go run src/main.go --signal SIGTERM",
+    "start": "npm-run-all  --serial swag dev_server",
     "race": "go run --race src/main.go",
     "go_init": "go mod init learn_go",
     "resolve_dependencies": "go mod tidy",
@@ -19,6 +20,7 @@
     "build_go": "go build -v -o go_server src/main.go",
     "build":"npm-run-all  --serial build_shared build_go",
     "start_prod": "npm-run ./go_server",
-    "test":"npm-run-all race"
+    "test":"npm-run-all race",
+    "swag":"~/go/bin/swag init --dir src"
   }
 }

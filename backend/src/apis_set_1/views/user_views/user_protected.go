@@ -15,6 +15,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// @BasePath /api
+// @Summary url to view user data
+// @Schemes
+// @Description allow people to their user profile data
+// @Tags View user data
+// @Accept json
+// @Produce json
+// @Param page query string false "page"
+// @Param limit query string false "limit"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /user/ [get]
 func GetUserData(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	payload, ok := my_modules.ExtractTokenPayload(c)

@@ -10,13 +10,28 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
+
 	log "github.com/sirupsen/logrus"
 )
 
+
+// @BasePath /api
+// @Summary url to signup
+// @Schemes
+// @Description allow people to create new to user account
+// @Tags SignUp
+// @Accept json
+// @Produce json
+// @Param new_user body my_modules.NewUserRow true "Add user"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Failure 403 {object} my_modules.ResponseFormat
+// @Router /sign_up [post]
 func SignUp(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 	// in Progress
-
+	
 	var newUserRow my_modules.NewUserRow
 	// ShouldBindJSON will validate json body & convert it to structure object
 	if err := c.ShouldBindJSON(&newUserRow); err != nil {
@@ -57,6 +72,18 @@ type UserEmailID struct {
 	Email string `json:"email" binding:"required"`
 }
 
+// @BasePath /api
+// @Summary url to login
+// @Schemes
+// @Description allow people to login into their account
+// @Tags Login
+// @Accept json
+// @Produce json
+// @Param new_user body UserEmailID true "Add user"
+// @Success 200 {object} my_modules.ResponseFormat
+// @Failure 400 {object} my_modules.ResponseFormat
+// @Failure 500 {object} my_modules.ResponseFormat
+// @Router /login [post]
 func Login(c *gin.Context) {
 	db_connection := database.POSTGRES_DB_CONNECTION
 
