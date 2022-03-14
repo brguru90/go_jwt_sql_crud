@@ -1,4 +1,28 @@
 definitions:
+  my_modules.ActiveSessionsRow:
+    properties:
+      createdAt: {}
+      exp:
+        type: integer
+      id:
+        type: integer
+      ip:
+        type: string
+      status:
+        type: string
+      token_id:
+        type: string
+      ua:
+        type: string
+      updatedAt: {}
+      user_uuid:
+        type: string
+      uuid:
+        type: string
+    required:
+    - exp
+    - token_id
+    type: object
   my_modules.NewUserRow:
     properties:
       createdAt: {}
@@ -78,6 +102,34 @@ paths:
       summary: InvalidateUsercache
       tags:
       - Delete user cache
+  /hello/{page}/{limit}:
+    get:
+      consumes:
+      - application/json
+      description: just to test,and work space to play with request
+      parameters:
+      - description: page
+        in: path
+        name: page
+        type: integer
+      - description: limit
+        in: path
+        name: limit
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: Test API
+      tags:
+      - Hello
   /login:
     post:
       consumes:
@@ -169,10 +221,36 @@ paths:
       tags:
       - SignUp
   /user/:
+    delete:
+      consumes:
+      - application/json
+      description: allow people to delete their account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: url to delete user account
+      tags:
+      - Delete user account
     get:
       consumes:
       - application/json
-      description: allow people to their user profile data
+      description: allow people to view their user profile data
       parameters:
       - description: page
         in: query
@@ -200,4 +278,126 @@ paths:
       summary: url to view user data
       tags:
       - View user data
+    put:
+      consumes:
+      - application/json
+      description: allow people to update their user profile data
+      parameters:
+      - description: Add user
+        in: body
+        name: new_user
+        required: true
+        schema:
+          $ref: '#/definitions/my_modules.NewUserRow'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: url to update user data
+      tags:
+      - Update user data
+  /user/active_sessions/:
+    get:
+      consumes:
+      - application/json
+      description: return the active user session/token across all browser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: get active user login session
+      tags:
+      - Get Active sessions
+  /user/block_token/:
+    post:
+      consumes:
+      - application/json
+      description: Adds the token of user to block list based on provided token id
+      parameters:
+      - description: block token
+        in: body
+        name: block_active_session
+        required: true
+        schema:
+          $ref: '#/definitions/my_modules.ActiveSessionsRow'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: block specified session
+      tags:
+      - Block sessions
+  /user/logout/:
+    get:
+      consumes:
+      - application/json
+      description: API allow user to logout, which delete the cookie which stores
+        token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/my_modules.ResponseFormat'
+      summary: allow user to logout
+      tags:
+      - Logout
 swagger: "2.0"

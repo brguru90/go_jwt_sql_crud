@@ -43,7 +43,7 @@ export default function user_profile() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                newUserData,
+                ...newUserData,
             }),
         }, () => navigate("/"))
             .then(() => {
