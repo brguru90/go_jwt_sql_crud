@@ -14,6 +14,7 @@ func ForUserPagination(c *gin.Context) string {
 	}
 	payload, ok := my_modules.ExtractTokenPayload(c)
 	if !ok {
+		// log.Panicln("Error in extracting payload from token")
 		return "uuid=" + time.Now().String()
 	}
 	return "uuid=" + payload.Data.UUID

@@ -3,7 +3,6 @@ package my_modules
 import (
 	"bytes"
 	"crypto/sha1"
-	"encoding/json"
 	"fmt"
 	"learn_go/src/database"
 	"math"
@@ -34,17 +33,15 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 		}
 
 		_uri := c.Request.RequestURI
-		route_path := c.FullPath()
 		_raw_dt, _ := c.GetRawData()
-		_params, _ := json.Marshal(c.Params)
 		_prefix := ""
 		if custom_cache_prefix != nil {
 			_prefix = "___" + custom_cache_prefix(c)
 		}
 
 		h := sha1.New()
-		h.Write([]byte(_uri + string(_params) + string(_raw_dt)))
-		cache_key := table_name + _prefix + "___" + route_path + "___" + string(h.Sum(nil))
+		h.Write([]byte(string(_raw_dt)))
+		cache_key := table_name + _prefix + "___" + _uri + "___" + string(h.Sum(nil))
 
 		var responseCache ResponseCacheStruct
 
@@ -54,7 +51,7 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 			if cache_mis_err == nil {
 				_now := time.Now()
 
-				log.Debugln("cache hit --> " + route_path)
+				log.Debugln("cache hit --> " + _uri)
 
 				c.Writer.Header().Set("Content-Type", responseCache.ContentType)
 				c.Writer.Header().Set("From-cache", _temp_val)
@@ -65,14 +62,13 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 					// renewing cache expiry if 25% of Time To Live(TTL) value is elapsed
 					cache_ttl_sec_3quarter := time.Duration(one_sec * int(math.Floor(cache_ttl_secs.Seconds()*0.75)))
 					if _now.Sub(responseCache.LastModified) >= cache_ttl_sec_3quarter {
-						log.Debugln("cache Renewing --> " + route_path)
+						log.Debugln("cache Renewing --> " + _uri)
 						responseCache.LastModified = _now
 						err := database.RedisPoolSetJSON(cache_key, responseCache, cache_ttl_secs)
 						if err != nil {
 							log.WithFields(log.Fields{
 								"err":     err,
 								"_uri":    _uri,
-								"_params": _params,
 								"_raw_dt": _raw_dt,
 							}).Error("while caching response")
 						}
@@ -81,12 +77,11 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 				return
 			}
 			if strings.Contains(strings.ToLower(fmt.Sprintf("%s", cache_mis_err)), "key is missing") {
-				log.Debugln("cache miss --> " + route_path)
+				log.Debugln("cache miss --> " + _uri)
 			} else {
 				log.WithFields(log.Fields{
 					"err":     cache_mis_err,
 					"_uri":    _uri,
-					"_params": _params,
 					"_raw_dt": _raw_dt,
 				}).Error("while getting response from cache")
 			}
@@ -110,7 +105,6 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 				log.WithFields(log.Fields{
 					"err":     err,
 					"_uri":    _uri,
-					"_params": _params,
 					"_raw_dt": _raw_dt,
 				}).Error("while caching response")
 			}

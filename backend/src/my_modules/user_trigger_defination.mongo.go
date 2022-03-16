@@ -86,7 +86,7 @@ func modifyCacheProgressStatus(operation string, ctx context.Context) {
 	}
 }
 
-func invalidateCache(uuid string) {
+func InvalidateCache(uuid string) {
 	log.WithFields(log.Fields{
 		"uuid":uuid,
 	}).Debugln("invalidateCache....")
@@ -100,6 +100,4 @@ func invalidateCache(uuid string) {
 	getUsersCount(ctx)
 }
 
-func OnUserModification(uuid string) {
-	go invalidateCache(uuid)
-}
+

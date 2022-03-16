@@ -68,9 +68,11 @@ func Hello_api(c *gin.Context) {
 	blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 	c.Writer = blw
 
-	c.String(http.StatusOK, "Welcome hello,"+string(h.Sum(nil)))
+	fmt.Println("hash=",string(h.Sum(nil)))
 
-	fmt.Println("Response body: " + blw.body.String())
-	fmt.Println("c.Request.Response.Body Content-Type", c.Writer.Header().Get("Content-Type"))
-	fmt.Println("c.Request.Response.StatusCode", c.Writer.Status())
+	c.String(http.StatusOK, "Welcome hello")
+
+	// fmt.Println("Response body: " + blw.body.String())
+	// fmt.Println("c.Request.Response.Body Content-Type", c.Writer.Header().Get("Content-Type"))
+	// fmt.Println("c.Request.Response.StatusCode", c.Writer.Status())
 }
