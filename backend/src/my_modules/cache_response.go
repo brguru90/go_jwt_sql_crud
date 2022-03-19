@@ -6,17 +6,16 @@ import (
 	"fmt"
 	"learn_go/src/database"
 	"math"
-	"os"
 	"strings"
 	"time"
+
+	"learn_go/src/configs"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
 const one_sec = 1000000000
-
-var cache_enabled bool = os.Getenv("ENABLE_REDIS_CACHE") == "true"
 
 func (w bodyLogWriter) Write(b []byte) (int, error) {
 	w.body.Write(b)
@@ -27,7 +26,7 @@ func GetCachedResponse(view_func func(*gin.Context), table_name string, cache_tt
 
 	return func(c *gin.Context) {
 
-		if !cache_enabled {
+		if !configs.EnvConfigs.ENABLE_REDIS_CACHE {
 			view_func(c)
 			return
 		}

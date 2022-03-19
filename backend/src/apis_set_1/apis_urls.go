@@ -4,10 +4,9 @@ import (
 	"learn_go/src/apis_set_1/api_modules"
 	"learn_go/src/apis_set_1/views"
 	"learn_go/src/apis_set_1/views/user_views"
+	"learn_go/src/configs"
 	"learn_go/src/middlewares"
 	"learn_go/src/my_modules"
-	"os"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,11 +14,9 @@ import (
 
 const one_sec = 1000000000
 
-var CACHE_TTL, _ = strconv.ParseInt(os.Getenv("RESPONSE_CACHE_TTL_IN_SECS"), 10, 64)
-var CACHE_TTL_DURATION = time.Duration(one_sec * CACHE_TTL)
-
 // only the functions whose initial letter is upper case only those can be exportable from package
 func InitApiTest(router *gin.RouterGroup) {
+	var CACHE_TTL_DURATION = time.Duration(one_sec * configs.EnvConfigs.RESPONSE_CACHE_TTL_IN_SECS)
 
 	router.Use(middlewares.ApiSpecificMiddleware())
 

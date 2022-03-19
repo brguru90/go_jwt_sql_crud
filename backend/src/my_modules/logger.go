@@ -1,14 +1,14 @@
 package my_modules
 
 import (
-	"os"
+	"learn_go/src/configs"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func InitLogger() {
 
-	if os.Getenv("APP_ENV") == "production" {
+	if configs.EnvConfigs.APP_ENV == "production" {
 		log.SetFormatter(&log.JSONFormatter{})
 	} else {
 		log.SetLevel(log.DebugLevel)

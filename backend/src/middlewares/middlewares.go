@@ -9,7 +9,7 @@ import (
 
 func FindUserAgentMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// if os.Getenv("APP_ENV") != "production" {
+		// if configs.EnvConfigs.APP_ENV != "production" {
 		// 	log.WithFields(log.Fields{
 		// 		"path":           c.FullPath(),
 		// 		"User Agent":     c.GetHeader("User-Agent"),

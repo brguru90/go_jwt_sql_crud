@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"learn_go/src/configs"
 	"os"
 	"strings"
 
@@ -20,14 +21,14 @@ var POSTGRES_DB_CONNECTION *pgxpool.Pool
 func ConnectPostgres() *pgxpool.Pool {
 	// https://github.com/jackc/pgx
 
-	var DB_USER string = os.Getenv("DB_USER")
-	var DB_PASSWORD string = os.Getenv("DB_PASSWORD")
-	var DB_HOST string = os.Getenv("DB_HOST")
-	var DATABASE string = os.Getenv("DATABASE")
-	var DB_PORT string = os.Getenv("DB_PORT")
+	var DB_USER string = configs.EnvConfigs.POSTGRES_DB_USER
+	var DB_PASSWORD string = configs.EnvConfigs.POSTGRES_DB_PASSWORD
+	var DB_HOST string = configs.EnvConfigs.POSTGRES_DB_HOST
+	var DATABASE string = configs.EnvConfigs.POSTGRES_DATABASE
+	var DB_PORT int64 = configs.EnvConfigs.POSTGRES_DB_PORT
 
 	// trying to connect database assuming specified database is already present
-	var DB_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DATABASE)
+	var DB_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DATABASE)
 	dbconfig, err := pgxpool.ParseConfig(DB_URL)
 
 	if err != nil {
@@ -63,7 +64,7 @@ func ConnectPostgres() *pgxpool.Pool {
 
 		{
 			// Since specified DB not present, connecting postgres DB to create a new Database
-			var POSTGRES_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%s/postgres", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+			var POSTGRES_URL string = fmt.Sprintf("postgresql://%s:%s@%s:%d/postgres", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 			log.Infoln(fmt.Sprintf("Connecting to %s", POSTGRES_URL))
 			_db_connection, err := pgx.Connect(context.Background(), POSTGRES_URL)
 			if err != nil {

@@ -5,10 +5,10 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"learn_go/src/configs"
 	"learn_go/src/database"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"time"
 
@@ -16,10 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
-
-var JWT_TOKEN_EXPIRE_IN_MINS, _ = strconv.ParseInt(os.Getenv("JWT_TOKEN_EXPIRE_IN_MINS"), 10, 64)
-var JWT_TOKEN_EXPIRE = JWT_TOKEN_EXPIRE_IN_MINS * 60 * 1000
-var JWT_SECRET_KEY string = os.Getenv("JWT_SECRET_KEY")
 
 type TokenPayload struct {
 	Email string `json:"email" binding:"required"`
@@ -47,6 +43,7 @@ func randomBytes(size int) (blk []byte, err error) {
 }
 
 func GenerateAccessToken(uname string, csrf_token string, data TokenPayload) (string, AccessTokenClaims) {
+
 	time_now := time.Now().UnixMilli()
 	token_id := ""
 
@@ -60,7 +57,7 @@ func GenerateAccessToken(uname string, csrf_token string, data TokenPayload) (st
 			Token_id:     token_id,
 			Data:         data,
 			IssuedAtTime: time_now,
-			Exp:          time_now + JWT_TOKEN_EXPIRE,
+			Exp:          time_now + configs.EnvConfigs.JWT_TOKEN_EXPIRE_IN_MINS*60*1000,
 		},
 	}
 
@@ -72,13 +69,13 @@ func GenerateAccessToken(uname string, csrf_token string, data TokenPayload) (st
 
 	// generating token with encrypted payload
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenPayload)
-	token_string, token_err := token.SignedString([]byte(JWT_SECRET_KEY))
+	token_string, token_err := token.SignedString([]byte(configs.EnvConfigs.JWT_SECRET_KEY))
 
 	if token_err != nil {
 		log.WithFields(log.Fields{
 			"token_err":      token_err,
 			"token_data":     accessTokenPayload,
-			"JWT_SECRET_KEY": JWT_SECRET_KEY,
+			"JWT_SECRET_KEY": configs.EnvConfigs.JWT_SECRET_KEY,
 		}).Panic("Error in signing JWT")
 	}
 
@@ -155,7 +152,7 @@ func LoginStatus(c *gin.Context) (AccessToken, string, int, bool) {
 
 	// decrypting JWT & retriving payload
 	token, err := jwt.ParseWithClaims(access_token, &token_claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(JWT_SECRET_KEY), nil
+		return []byte(configs.EnvConfigs.JWT_SECRET_KEY), nil
 	})
 
 	if err != nil {
