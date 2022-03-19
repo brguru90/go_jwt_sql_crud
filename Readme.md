@@ -1,5 +1,4 @@
 <meta name="description" content="go_jwt_sql_crud | Go/psql and Go/mongo and node js/psql">
-<meta name="google-site-verification" content="vQJQz6tOGWKPZR9G_6hlKEihRD6Qzt_hYpNyWoOBvXE" />
 
 
 # Testing Configuration [Go gin framework Benchmark]
