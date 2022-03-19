@@ -15,7 +15,7 @@
 
 
 
-## 1. Go run command [Will be used in comparison - <a href="https://github.com/brguru90/go_jwt_sql_crud">Go/psql</a> and  <a href="https://github.com/brguru90/go_jwt_mongodb_crud">Go/mongo</a> and <a href="https://github.com/brguru90/node-sql-and-jwt-demo">node js/psql]</a>]
+## 1. Go run command [Will be used in comparison - <a href="https://github.com/brguru90/go_jwt_sql_crud">Go/psql</a> and  <a href="https://github.com/brguru90/go_jwt_mongodb_crud">Go/mongo</a> and <a href="https://github.com/brguru90/node-sql-and-jwt-demo">node js/psql</a>]
 
 ### ROW Count =  1220001  
 ### gin framework
