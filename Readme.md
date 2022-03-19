@@ -12,7 +12,7 @@
 
 
 
-## 1. Go run command [Will be used in comparison - Go/psql and Go/mongo and node js]
+## 1. Go run command [Will be used in comparison - Go/psql and Go/mongo and node js/psql]
 
 ### ROW Count =  1220001  
 ### gin framework
