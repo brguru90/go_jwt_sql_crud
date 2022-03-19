@@ -247,7 +247,7 @@ Percentage of the requests served within a certain time (ms)
 
 
 
-## 2. Go run command [Will be used in comparison]
+## 2. Go run command
 
 ### ROW Count =  1220001  
 ### gin framework
