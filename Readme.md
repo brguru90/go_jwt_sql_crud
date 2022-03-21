@@ -285,33 +285,33 @@ Document Path:          /api/login_status/
 Document Length:        Variable
 
 Concurrency Level:      1000
-Time taken for tests:   3.568 seconds
+Time taken for tests:   3.661 seconds
 Complete requests:      100000
 Failed requests:        0
-Total transferred:      24000000 bytes
-HTML transferred:       13100000 bytes
-Requests per second:    28025.33 [#/sec] (mean)
-Time per request:       35.682 [ms] (mean)
-Time per request:       0.036 [ms] (mean, across all concurrent requests)
-Transfer rate:          6568.44 [Kbytes/sec] received
+Total transferred:      25300000 bytes
+HTML transferred:       14400000 bytes
+Requests per second:    27311.48 [#/sec] (mean)
+Time per request:       36.615 [ms] (mean)
+Time per request:       0.037 [ms] (mean, across all concurrent requests)
+Transfer rate:          6747.86 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   20  88.0     11    1047
-Processing:     0   14  13.8     13     226
-Waiting:        0   10  13.5      8     222
-Total:          0   34  89.6     24    1069
+Connect:        0   19  80.6     12    1042
+Processing:     1   16  15.6     14     232
+Waiting:        1   12  15.6     10     230
+Total:          1   35  82.3     26    1066
 
 Percentage of the requests served within a certain time (ms)
-  50%     24
-  66%     30
-  75%     34
-  80%     35
-  90%     37
-  95%     38
-  98%     40
-  99%    227
- 100%   1069 (longest request)
+  50%     26
+  66%     29
+  75%     31
+  80%     33
+  90%     35
+  95%     37
+  98%     74
+  99%    225
+ 100%   1066 (longest request)
 ```
 ```
 This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
@@ -340,33 +340,33 @@ Document Path:          /api/user/
 Document Length:        Variable
 
 Concurrency Level:      1000
-Time taken for tests:   3.958 seconds
+Time taken for tests:   3.960 seconds
 Complete requests:      100000
 Failed requests:        0
-Total transferred:      48288894 bytes
-HTML transferred:       31600000 bytes
-Requests per second:    25265.96 [#/sec] (mean)
-Time per request:       39.579 [ms] (mean)
+Total transferred:      88488911 bytes
+HTML transferred:       71800000 bytes
+Requests per second:    25252.69 [#/sec] (mean)
+Time per request:       39.600 [ms] (mean)
 Time per request:       0.040 [ms] (mean, across all concurrent requests)
-Transfer rate:          11914.70 [Kbytes/sec] received
+Transfer rate:          21822.10 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   19  87.9     11    1038
-Processing:     1   20  15.0     19     240
-Waiting:        1   16  15.0     14     232
-Total:          1   39  89.3     30    1062
+Connect:        0   16  49.8     14    1028
+Processing:     1   22   9.0     22     229
+Waiting:        1   17   8.8     16     224
+Total:          1   39  50.7     37    1054
 
 Percentage of the requests served within a certain time (ms)
-  50%     30
-  66%     33
-  75%     35
-  80%     36
-  90%     39
-  95%     43
+  50%     37
+  66%     39
+  75%     40
+  80%     41
+  90%     43
+  95%     45
   98%     48
-  99%    233
- 100%   1062 (longest request)
+  99%     51
+ 100%   1054 (longest request)
 ```
 ```
 This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
@@ -395,33 +395,33 @@ Document Path:          /api/user/?page=1&limit=20
 Document Length:        Variable
 
 Concurrency Level:      1000
-Time taken for tests:   4.321 seconds
+Time taken for tests:   5.057 seconds
 Complete requests:      100000
 Failed requests:        0
-Total transferred:      341088757 bytes
-HTML transferred:       326500000 bytes
-Requests per second:    23143.11 [#/sec] (mean)
-Time per request:       43.209 [ms] (mean)
-Time per request:       0.043 [ms] (mean, across all concurrent requests)
-Transfer rate:          77088.41 [Kbytes/sec] received
+Total transferred:      1420088865 bytes
+HTML transferred:       1405500000 bytes
+Requests per second:    19775.78 [#/sec] (mean)
+Time per request:       50.567 [ms] (mean)
+Time per request:       0.051 [ms] (mean, across all concurrent requests)
+Transfer rate:          274251.64 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   18  71.8     13    1042
-Processing:     4   25  15.2     23     251
-Waiting:        1   20  15.5     18     243
-Total:          7   43  73.0     38    1069
+Connect:        0   14   3.3     15      22
+Processing:     7   33   6.5     34      98
+Waiting:        1   18   6.0     18      81
+Total:         18   47   7.7     50     100
 
 Percentage of the requests served within a certain time (ms)
-  50%     38
-  66%     41
-  75%     43
-  80%     44
-  90%     47
-  95%     49
-  98%     56
-  99%     71
- 100%   1069 (longest request)
+  50%     50
+  66%     51
+  75%     52
+  80%     53
+  90%     55
+  95%     56
+  98%     59
+  99%     62
+ 100%    100 (longest request)
 ```
 ```
 This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
@@ -450,31 +450,31 @@ Document Path:          /api/user/?page=1000&limit=20
 Document Length:        Variable
 
 Concurrency Level:      1000
-Time taken for tests:   3.982 seconds
+Time taken for tests:   4.982 seconds
 Complete requests:      100000
 Failed requests:        0
-Total transferred:      27388876 bytes
-HTML transferred:       10700000 bytes
-Requests per second:    25115.88 [#/sec] (mean)
-Time per request:       39.815 [ms] (mean)
-Time per request:       0.040 [ms] (mean, across all concurrent requests)
-Transfer rate:          6717.73 [Kbytes/sec] received
+Total transferred:      1427488957 bytes
+HTML transferred:       1412900000 bytes
+Requests per second:    20071.12 [#/sec] (mean)
+Time per request:       49.823 [ms] (mean)
+Time per request:       0.050 [ms] (mean, across all concurrent requests)
+Transfer rate:          279797.82 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   17  64.1     13    1050
-Processing:     6   22  11.4     22     242
-Waiting:        0   17  11.6     16     241
-Total:         17   39  64.9     35    1076
+Connect:        0   19  81.4     13    1040
+Processing:    10   30   7.8     30     225
+Waiting:        1   17   7.2     16     215
+Total:         17   49  82.4     45    1091
 
 Percentage of the requests served within a certain time (ms)
-  50%     35
-  66%     37
-  75%     39
-  80%     40
-  90%     42
-  95%     44
-  98%     47
-  99%     52
- 100%   1076 (longest request)
+  50%     45
+  66%     49
+  75%     51
+  80%     51
+  90%     54
+  95%     56
+  98%     61
+  99%     66
+ 100%   1091 (longest request)
 ```

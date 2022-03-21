@@ -19,8 +19,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var SERVER_PORT string = "8000"
-
 func main() {
 
 	configs.InitEnv()

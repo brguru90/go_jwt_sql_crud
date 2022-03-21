@@ -133,18 +133,42 @@ func RedisPoolGet(key string) (string, error) {
 	return s, err
 }
 
+func RedisPoolSet_Bytes(key string, value []byte, ttl_sec time.Duration) error {
+	conn := REDIS_DB_CONNECTION_POOL.Get()
+	defer conn.Close()
+
+	var err error
+	if ttl_sec <= 0 {
+		_, err = conn.Do("SET", key, value)
+	} else {
+		_, err = conn.Do("SET", key, value, "EX", fmt.Sprintf("%v", (ttl_sec).Seconds()))
+	}
+	return err
+}
+
+func RedisPoolGet_Bytes(key string) ([]byte, error) {
+	conn := REDIS_DB_CONNECTION_POOL.Get()
+	defer conn.Close()
+
+	s, err := redispool.Bytes(conn.Do("GET", key))
+	if err != nil {
+		return []byte{}, err
+	}
+	return s, err
+}
+
 func RedisPoolSetJSON(key string, value interface{}, ttl_sec time.Duration) error {
 	json_str, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
-	return RedisPoolSet(key, string(json_str), ttl_sec)
+	return RedisPoolSet_Bytes(key, json_str, ttl_sec)
 }
 
 func RedisPoolGetJSON(key string, destination interface{}) error {
-	val, err := RedisPoolGet(key)
+	val, err := RedisPoolGet_Bytes(key)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal([]byte(val), &destination)
+	return json.Unmarshal(val, &destination)
 }
