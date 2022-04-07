@@ -14,7 +14,7 @@
     "start": "npm-run-all  --serial swag dev_server",
     "race": "go run --race src/main.go",
     "go_init": "go mod init learn_go",
-    "resolve_dependencies": "go mod tidy",
+    "resolve_dependencies": "go mod tidy -e -go=1.16 && go mod tidy -e -go=1.17",
     "install": "npm-run-all  --serial --continue-on-error go_init resolve_dependencies",
     "build_shared":"go build -o src/database/triggers/user_update_trigger.so -buildmode=c-shared src/database/triggers/*.go",
     "build_shared_windows":"go build -o src/database/triggers/user_update_trigger.dll -buildmode=c-shared src/database/triggers/*.go",

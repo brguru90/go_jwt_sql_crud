@@ -6,6 +6,8 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
+	"learn_go/src/configs"
+	"learn_go/src/utils"
 )
 
 const create_user_table string = `CREATE TABLE IF NOT EXISTS "users" ("id"   SERIAL , "uuid" UUID, "name" VARCHAR(255) NOT NULL, "email" VARCHAR(255) NOT NULL UNIQUE, "description" TEXT, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, PRIMARY KEY ("id"));`
@@ -16,7 +18,12 @@ const users_uuid string = ` CREATE INDEX "users_uuid" ON "users" ("uuid");`
 
 func get_trigger_sqls() []string {
 	// * chmod o+rx $HOME, if permission denied
-	user_update_trigger, err := filepath.Abs("src/database/triggers/user_update_trigger.so")
+	user_update_trigger_path, err := filepath.Abs("src/database/triggers/user_update_trigger.so")
+	if configs.EnvConfigs.POSTGRES_TRIGGER_USE_CDN == "true" {
+		if err := utils.CopyFIle(user_update_trigger_path, configs.EnvConfigs.POSTGRES_TRIGGER_FROM_CDN_FILEPATH); err == nil {
+			user_update_trigger_path = configs.EnvConfigs.POSTGRES_TRIGGER_FROM_CDN_URL
+		}
+	}
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
@@ -26,7 +33,7 @@ func get_trigger_sqls() []string {
 	// Creating the function & mapping the function to the executable build
 	var users_triggers_map_func = fmt.Sprintf(`CREATE FUNCTION user_update_trigger()
 RETURNS TRIGGER AS '%s'
-LANGUAGE C;`, user_update_trigger)
+LANGUAGE C;`, user_update_trigger_path)
 
 	// Creating the trigger & mapping function to user table
 	var users_triggers_register_to_table = `CREATE TRIGGER user_update_trigger_on_insert
