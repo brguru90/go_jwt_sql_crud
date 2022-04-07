@@ -1,32 +1,24 @@
 package utils
 
 import (
-	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
 )
 
-func CopyFIle(_source string, _destination string) error {
+func CopyFIle(_source string, _destination string) (string,error) {
 	file1, err := os.Open(_source)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"err":err,
-		}).Errorln("Error in opening file");
-		return err
+		return "Error in opening source file",err
 	}
 	defer file1.Close()
 	fileinfo, err := file1.Stat()
 	if err != nil {
-		log.WithFields(log.Fields{
-			"err":err,
-		}).Errorln("Error in getting file properties");
-		return err
+		return "Error in getting source file properties",err
 	}
 
-	file2, err := os.Open(_destination)
+	file2, err := os.OpenFile(_destination,os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
-		log.Errorln(err)
-		return err
+		return  "Error in opening/creating destination file",err
 	}
 	defer file2.Close()
 
@@ -36,15 +28,15 @@ func CopyFIle(_source string, _destination string) error {
 	for {
 		n, err := file1.Read(buf)
 		if err != nil && err != io.EOF {
-			return err
+			return "Error in reading sourcefile buffer",err
 		}
 		if n == 0 {
 			break
 		}
 
 		if _, err := file2.Write(buf[:n]); err != nil {
-			return err
+			return "Error in writing destination buffer",err
 		}
 	}
-	return nil
+	return "",nil
 }

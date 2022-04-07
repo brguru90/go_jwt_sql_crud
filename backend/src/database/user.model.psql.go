@@ -20,8 +20,15 @@ func get_trigger_sqls() []string {
 	// * chmod o+rx $HOME, if permission denied
 	user_update_trigger_path, err := filepath.Abs("src/database/triggers/user_update_trigger.so")
 	if configs.EnvConfigs.POSTGRES_TRIGGER_USE_CDN == "true" {
-		if err := utils.CopyFIle(user_update_trigger_path, configs.EnvConfigs.POSTGRES_TRIGGER_FROM_CDN_FILEPATH); err == nil {
+		if file_err_msg,file_err := utils.CopyFIle(user_update_trigger_path, configs.EnvConfigs.POSTGRES_TRIGGER_CDN_FILEPATH); file_err == nil {
 			user_update_trigger_path = configs.EnvConfigs.POSTGRES_TRIGGER_FROM_CDN_URL
+		} else {
+			log.WithFields(log.Fields{
+				"file_err_msg":file_err_msg,
+				"file_err":file_err,
+				"source_path":user_update_trigger_path,
+				"destination_path":configs.EnvConfigs.POSTGRES_TRIGGER_CDN_FILEPATH,
+			}).Error("Error in copying file")
 		}
 	}
 	if err != nil {
