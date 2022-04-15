@@ -49,7 +49,7 @@ func ApiSpecificMiddleware() gin.HandlerFunc {
 
 func ValidateToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		decoded_token, err, http_status, ok := my_modules.LoginStatus(c)
+		decoded_token, err, http_status, ok := my_modules.LoginStatus(c,true)
 		if http_status <= 0 || http_status != 200 {
 			my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)
 			c.Abort()

@@ -146,7 +146,7 @@ func Login(c *gin.Context) {
 // @Failure 500 {object} my_modules.ResponseFormat
 // @Router /login_status [get]
 func LoginStatus(c *gin.Context) {
-	decoded_token, err, http_status, ok := my_modules.LoginStatus(c)
+	decoded_token, err, http_status, ok := my_modules.LoginStatus(c,false)
 	if err != "" {
 		my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)
 		return

@@ -13,3 +13,4 @@ backend/package-lock.json
 frontend/package-lock.json
 package-lock.json
 test.o
+backend/src/database/triggers/user_update_trigger.so
