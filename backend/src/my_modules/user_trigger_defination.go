@@ -10,6 +10,39 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func FindUsersForcacheInvalidate(user_id string)  {
+	db_connection := database.POSTGRES_DB_CONNECTION
+	ctx:=context.Background()
+	db_query := `SELECT uuid FROM users WHERE id=$1`
+	rows, err := db_connection.Query(ctx, db_query,user_id)
+	if err != nil {
+		if err != context.Canceled {
+			log.WithFields(log.Fields{
+				"error": err,
+				"query": db_query,
+			}).Errorln("QueryRow failed ==>")
+		}
+		return
+	} else {
+		defer rows.Close() //importent to prevent connection leak
+		for rows.Next() {
+			var uuid string
+			err := rows.Scan(&uuid)
+			if err != nil {
+				log.Errorln(fmt.Sprintf("Scan failed: %v\n", err))
+				continue
+			}
+			go InvalidateCache(uuid)
+		}
+		if err := rows.Err(); err != nil {
+			if err != context.Canceled {
+				log.Errorln(fmt.Sprintf("Row Err in rows.Next/rows.Scan failed: %v\n", err))
+			}
+			return
+		}
+	}
+}
+
 func deleteUserCache(uuid string, ctx context.Context) {
 	// Deletes the cache for the specified user by his ID
 	_users_keys, err := database.REDIS_DB_CONNECTION.Keys(ctx, "users___uuid="+uuid+"___/api/user/*").Result()

@@ -30,9 +30,11 @@ static int64 get_row_id_first_col(TriggerData *trigdata, HeapTuple rettuple, int
 */
 import "C"
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 	"unsafe"
 
 	log "github.com/sirupsen/logrus"
@@ -74,6 +76,8 @@ func RediscacheInvalidation(user_id string) {
 	req.Header.Set("secret", "1234")
 	if err == nil {
 		client := &http.Client{}
+		ctx, _ := context.WithTimeout(context.Background(), 500*time.Millisecond)
+		req=req.WithContext(ctx)
 		_, err := client.Do(req)
 		if err == nil {
 			log.Infoln("successfully sent request to del_user_cache")
