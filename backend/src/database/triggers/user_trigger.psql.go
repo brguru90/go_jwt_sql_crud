@@ -70,7 +70,7 @@ func user_update_trigger(fcInfo *C.FunctionCallInfoBaseData) C.Datum {
 }
 
 func RediscacheInvalidation(user_id string) {
-	req, err := http.NewRequest("GET", "http://localhost:3000/api/del_user_cache/"+user_id, nil)
+	req, err := http.NewRequest("GET", "http://localhost:8000/api/del_user_cache/"+user_id, nil)
 	req.Header.Set("secret", "1234")
 	if err == nil {
 		client := &http.Client{}
