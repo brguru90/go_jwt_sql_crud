@@ -137,7 +137,7 @@ func Authenticate(c *gin.Context, newUserRow NewUserRow) AccessToken {
 	return access_token_payload.AccessToken
 }
 
-func LoginStatus(c *gin.Context,enforce_csrf_check bool) (AccessToken, string, int, bool) {
+func LoginStatus(c *gin.Context, enforce_csrf_check bool) (AccessToken, string, int, bool) {
 	var token_claims AccessTokenClaims
 	access_token, err := c.Cookie("access_token")
 
@@ -189,7 +189,7 @@ func LoginStatus(c *gin.Context,enforce_csrf_check bool) (AccessToken, string, i
 			Column_email: token_claims.AccessToken.Data.Email,
 			Column_uuid:  token_claims.AccessToken.Data.UUID,
 		})
-		if enforce_csrf_check{
+		if enforce_csrf_check {
 			return AccessToken{}, "missing csrf token", http.StatusForbidden, false
 		}
 	} else {
@@ -198,7 +198,7 @@ func LoginStatus(c *gin.Context,enforce_csrf_check bool) (AccessToken, string, i
 				Column_email: token_claims.AccessToken.Data.Email,
 				Column_uuid:  token_claims.AccessToken.Data.UUID,
 			})
-			if enforce_csrf_check{
+			if enforce_csrf_check {
 				return AccessToken{}, "invalid csrf token", http.StatusForbidden, false
 			}
 		}

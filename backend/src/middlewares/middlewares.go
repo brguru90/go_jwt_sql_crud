@@ -5,7 +5,6 @@ import (
 	"learn_go/src/my_modules"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func FindUserAgentMiddleware() gin.HandlerFunc {
@@ -38,7 +37,7 @@ func HeaderHandlerFunc(c *gin.Context) {
 
 func ApiSpecificMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Debugln("ApiSpecificMiddleware ===>", c.Request.URL.Path, c.FullPath())
+		// log.Debugln("ApiSpecificMiddleware ===>", c.Request.URL.Path, c.FullPath())
 		// !will not work for url params such as user/100.Apeending slash to URL if not present
 		// if c.FullPath() != "" && !strings.HasSuffix(c.FullPath(), "/") {
 		// 	c.Redirect(http.StatusTemporaryRedirect, c.FullPath()+"/")
@@ -50,7 +49,7 @@ func ApiSpecificMiddleware() gin.HandlerFunc {
 
 func ValidateToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		decoded_token, err, http_status, ok := my_modules.LoginStatus(c,configs.EnvConfigs.APP_ENV == "production")
+		decoded_token, err, http_status, ok := my_modules.LoginStatus(c, configs.EnvConfigs.APP_ENV == "production")
 		if http_status <= 0 || http_status != 200 {
 			my_modules.CreateAndSendResponse(c, http_status, "error", err, nil)
 			c.Abort()

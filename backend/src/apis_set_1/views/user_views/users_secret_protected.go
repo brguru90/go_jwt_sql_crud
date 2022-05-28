@@ -13,8 +13,6 @@ import (
 
 const api_secret = "1234"
 
-
-
 // @BasePath /api
 // @Summary InvalidateUsercache
 // @Schemes
@@ -37,7 +35,6 @@ func InvalidateUsercache(c *gin.Context) {
 
 	go my_modules.FindUsersForcacheInvalidate(c.Param("id"))
 	c.String(http.StatusOK, "Welcome hello")
-	
 
 	// db_connection := database.POSTGRES_DB_CONNECTION
 	// db_query := `SELECT uuid FROM users WHERE id=$1`
