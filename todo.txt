@@ -9,3 +9,4 @@
 9. cron to clear inactive session
 10. Benchmark
 11. Readme --> compare go benchmark score with https://github.com/brguru90/node-sql-and-jwt-demo benchmark
+12. encrypt data within the jwt
